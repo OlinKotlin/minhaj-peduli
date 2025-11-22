@@ -26,6 +26,7 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     * REDIRECTS TO: route('about')
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -33,7 +34,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redirects to the 'about' route (e.g., /tentang-kami)
+        return redirect()->intended(route('about', absolute: false));
     }
 
     /**
