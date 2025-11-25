@@ -4,15 +4,13 @@ export default function About() {
     // Variabel warna sesuai desain
     const MINHAJ_PRIMARY = "bg-green-600";
     const MINHAJ_BG = "bg-green-50";
-    const MINHAJ_CARD_BORDER = "border-green-300";
-    const MINHAJ_ICON_COLOR = "text-green-600";
 
     // Data Dummy Tim
     const teamMembers = [
-        { name: "Ketua", title: "" },
-        { name: "Ketua", title: "" },
-        { name: "Ketua", title: "" },
-        { name: "Ketua", title: "" },
+        { name: "Ketua", title: "Ketua Yayasan" },
+        { name: "Sekretaris", title: "Sekretaris" },
+        { name: "Bendahara", title: "Bendahara" },
+        { name: "Humas", title: "Hubungan Masyarakat" },
     ];
 
     // Komponen Ikon Orang
@@ -28,74 +26,91 @@ export default function About() {
 
             <div className={`min-h-screen ${MINHAJ_BG} text-slate-800 flex flex-col font-sans`}>
 
-                {/* 1. Header / Top Bar */}
+                {/* Header */}
                 <div className={`${MINHAJ_PRIMARY} text-white shadow-md`}>
                     <div className="mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
                         <div className="font-serif font-semibold text-lg">MinhajPeduli</div>
+
                         <div className="flex space-x-6 text-sm font-medium">
-                            {/* PERBAIKAN DI SINI: Menggunakan '#' sementara agar tidak error */}
-                            <Link href="#" className="hover:text-green-200">Profil</Link>
-                            <Link href="#" className="hover:text-green-200">Laporan</Link>
-                            <Link href="#" className="hover:text-green-200">Donasi</Link>
+
+                            {/* Profil */}
+                            <Link
+                                href={route('about')}
+                                className="hover:text-green-200"
+                            >
+                                Profil
+                            </Link>
+
+                            {/* Laporan */}
+                            <Link
+                                href={route('laporan')}
+                                className="hover:text-green-200"
+                            >
+                                Laporan
+                            </Link>
+
+                            {/* Donasi */}
+                            <Link
+                                href={route('donasi')}
+                                className="rounded-md bg-white text-green-800 px-3 py-1 text-sm font-medium hover:opacity-90"
+                            >
+                                Donasi
+                            </Link>
                         </div>
                     </div>
                 </div>
 
+                {/* Konten Utama */}
                 <div className="mx-auto max-w-5xl px-6 py-8 flex-grow w-full">
-                    {/* 2. Judul Halaman */}
+                    {/* Judul */}
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-black mb-1">Tentang Kami</h1>
                         <p className="text-xl font-bold text-green-600">Pondok Pesantren Misbahul Minhaj</p>
                     </div>
 
-                    {/* 3. Foto Konstruksi */}
+                    {/* Foto */}
                     <div className="mb-8 overflow-hidden rounded-xl shadow-lg">
                         <div className="grid md:grid-cols-2 gap-0">
                             <img
                                 src="/images/pesantren2.png"
                                 alt="Fondasi"
                                 className="w-full h-64 object-cover"
-                                onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Foto+Tidak+Ditemukan'; }}
                             />
                             <img
                                 src="/images/pesantren1.png"
                                 alt="Konstruksi"
                                 className="w-full h-64 object-cover"
-                                onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Foto+Tidak+Ditemukan'; }}
                             />
                         </div>
                     </div>
 
-                    {/* 4. Teks Perjalanan Kami */}
+                    {/* Perjalanan */}
                     <section className="mb-10">
                         <h2 className="text-2xl font-bold mb-3 text-black lowercase">perjalanan kami</h2>
                         <p className="text-gray-800 leading-relaxed text-sm text-justify">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </p>
-                        <p className="text-gray-800 leading-relaxed text-sm text-justify mt-4">
-                            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore...
                         </p>
                     </section>
 
-                    {/* 5. Visi Misi Cards */}
+                    {/* Visi Misi */}
                     <section className="grid md:grid-cols-3 gap-6 mb-12">
                         <div className="bg-white p-6 rounded-xl shadow-md text-center flex flex-col items-center">
                             <h3 className="text-xl font-bold mb-3 text-black">Visi</h3>
-                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet...</p>
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow-md text-center flex flex-col items-center">
                             <h3 className="text-xl font-bold mb-3 text-black">Misi</h3>
-                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet...</p>
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow-md text-center flex flex-col items-center">
                             <h3 className="text-xl font-bold mb-3 text-black">Nilai islam</h3>
-                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet...</p>
                         </div>
                     </section>
 
-                    {/* 6. Tim Kami */}
+                    {/* Tim Kami */}
                     <section className="mb-10">
                         <h2 className="text-2xl font-bold mb-6 text-black">Tim kami</h2>
                         <div className="flex justify-center gap-8 sm:gap-16 flex-wrap">
@@ -111,11 +126,11 @@ export default function About() {
                     </section>
                 </div>
 
-                {/* 7. Footer */}
+                {/* Footer */}
                 <footer className={`${MINHAJ_PRIMARY} text-white px-6 py-8 mt-auto`}>
                     <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center text-sm gap-4">
                         <div className="max-w-xs">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+                            <p>Lorem ipsum dolor sit amet...</p>
                         </div>
                         <div className="text-left md:text-right">
                             <p className="font-medium">192849047012759</p>

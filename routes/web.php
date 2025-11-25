@@ -5,7 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Route Halaman Utama
+// ROUTE HALAMAN UTAMA
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -13,19 +13,37 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('home'); // Beri nama 'home' untuk konsistensi
+})->name('home');
 
-// ROUTE BARU: Tentang Kami
+
+// ============================
+//       HALAMAN UTAMA APP
+// ============================
+
+// TENTANG KAMI
 Route::get('/tentang-kami', function () {
     return Inertia::render('About');
-})->middleware(['auth'])->name('about'); // Menggunakan middleware 'auth' karena ini adalah tujuan login
+})->middleware(['auth'])->name('about');
 
-// Route Dashboard (standar)
+// DONASI (HARUSNYA RENDER Donasi.jsx, BUKAN Laporan.jsx)
+Route::get('/donasi', function () {
+    return Inertia::render('Donasi');
+})->middleware(['auth'])->name('donasi');
+
+// LAPORAN
+Route::get('/laporan', function () {
+    return Inertia::render('Laporan');
+})->middleware(['auth'])->name('laporan');
+
+
+// ============================
+//  ROUTE DASHBOARD & PROFILE
+// ============================
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route Profil (standar)
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
