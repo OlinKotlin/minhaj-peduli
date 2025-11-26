@@ -2,15 +2,15 @@ import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function Laporan() {
-    // Halluuwwan (Colors)
+    // Variabel Warna (Sesuai Tema)
     const MINHAJ_PRIMARY = "bg-green-600";
     const MINHAJ_BG = "bg-green-50";
     const MINHAJ_CTA = "bg-green-500 text-white hover:bg-green-700";
 
-    // State Filter Kategori
+    // State untuk Filter Kategori
     const [activeCategory, setActiveCategory] = useState("Semua");
 
-    // Data Dummy Campaign
+    // Data Dummy Kampanye (Sesuai Gambar)
     const campaignsData = [
         { id: 1, category: "Kesehatan", title: "Kesehatan", target: 10000000, collected: 1000000, percentage: 10, image: "/images/pesantren2.png" },
         { id: 2, category: "Pendidikan", title: "Pendidikan", target: 10000000, collected: 1000000, percentage: 10, image: "/images/pesantren1.png" },
@@ -18,14 +18,15 @@ export default function Laporan() {
         { id: 4, category: "Lingkungan", title: "lingkungan", target: 10000000, collected: 1000000, percentage: 10, image: "/images/pesantren1.png" },
     ];
 
+    // Daftar Kategori untuk Filter
     const categories = ["Semua", "Teknologi", "Pendidikan", "Kesehatan", "Lingkungan"];
 
-    // Logic Filter
+    // Logika Filter: Tampilkan semua jika "Semua", jika tidak filter berdasarkan kategori
     const filteredCampaigns = activeCategory === "Semua"
         ? campaignsData
         : campaignsData.filter(c => c.category === activeCategory);
 
-    // Format Rupiah
+    // Fungsi Format Rupiah
     const formatRupiah = (number) => {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -45,12 +46,18 @@ export default function Laporan() {
                     <div className="mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
                         <div className="font-serif font-semibold text-lg">MinhajPeduli</div>
                         <div className="flex space-x-6 text-sm font-medium items-center">
-                            {/* Link Profil (Manual link 'a' tag for safety) */}
+                            {/* Link Profil */}
                             <a href="/tentang-kami" className="hover:text-green-200 cursor-pointer">Profil</a>
 
-                            {/* Menu Aktif (Laporan) */}
-                            <span className="px-3 py-1 bg-black/10 rounded-md font-bold border-b-2 border-white cursor-default">Laporan</span>
+                            {/* Link Laporan (Sekarang bisa diklik) */}
+                            <a
+                                href="/laporan"
+                                className="px-3 py-1 bg-black/10 rounded-md font-bold border-b-2 border-white cursor-pointer hover:bg-black/20 transition"
+                            >
+                                Laporan
+                            </a>
 
+                            {/* Link Donasi */}
                             <a href="/donasi" className="hover:text-green-200 cursor-pointer">Donasi</a>
                         </div>
                     </div>
@@ -58,10 +65,11 @@ export default function Laporan() {
 
                 <div className="mx-auto max-w-5xl px-6 py-8 flex-grow w-full">
 
-                    {/* 2. LOGO & JUDUL */}
+                    {/* 2. JUDUL & LOGO */}
                     <div className="text-center mb-8">
                         <div className="flex flex-col items-center mb-3">
                             <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden border border-green-300 p-1">
+                                {/* Pastikan file gambar ada di public/images/logo-minhaj.png */}
                                 <img src="/images/logo-minhaj.png" alt="Logo" className="w-full h-full object-contain"
                                      onError={(e) => e.target.style.display = 'none'} />
                             </div>
@@ -69,9 +77,9 @@ export default function Laporan() {
                         <h1 className="text-2xl font-bold text-green-600 font-serif">Pondok Pesantren AL Minhaj</h1>
                     </div>
 
-                    {/* 3. STATISTIK (DUA KOTAK) */}
+                    {/* 3. RINGKASAN STATISTIK (DUA KOTAK PUTIH) */}
                     <div className="grid md:grid-cols-2 gap-6 mb-10">
-                        {/* Dana Terkumpul */}
+                        {/* Total Dana */}
                         <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-4 border-l-4 border-green-500">
                             <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-sm">$</div>
                             <div>
@@ -82,6 +90,7 @@ export default function Laporan() {
                         {/* Total Donatur */}
                         <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-4 border-l-4 border-green-500">
                             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 shadow-sm">
+                                {/* Ikon Orang SVG */}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                                     <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
                                 </svg>
@@ -93,7 +102,7 @@ export default function Laporan() {
                         </div>
                     </div>
 
-                    {/* 4. FILTER KATEGORI */}
+                    {/* 4. FILTER KATEGORI (TOMBOL OVAL) */}
                     <div className="bg-white p-2 rounded-xl shadow-sm mb-10 flex flex-wrap justify-center gap-2 border border-gray-100">
                         {categories.map((cat) => (
                             <button
@@ -110,11 +119,11 @@ export default function Laporan() {
                         ))}
                     </div>
 
-                    {/* 5. GRID CAMPAIGN */}
+                    {/* 5. DAFTAR KAMPANYE (GRID 2 KOLOM) */}
                     <div className="grid md:grid-cols-2 gap-8">
                         {filteredCampaigns.map((campaign) => (
                             <div key={campaign.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-                                {/* Gambar */}
+                                {/* Gambar Kampanye */}
                                 <div className="relative h-48 overflow-hidden bg-gray-200">
                                     <img
                                         src={campaign.image}
@@ -122,13 +131,13 @@ export default function Laporan() {
                                         className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500"
                                         onError={(e) => e.target.style.opacity = 0}
                                     />
-                                    {/* Fallback Text */}
+                                    {/* Fallback Text jika gambar rusak */}
                                     <div className="absolute inset-0 flex items-center justify-center text-gray-400 -z-10 font-bold">
                                         {campaign.category}
                                     </div>
                                 </div>
 
-                                {/* Content */}
+                                {/* Konten Kartu */}
                                 <div className="p-6 flex flex-col flex-grow">
                                     <h3 className="text-2xl font-serif font-bold mb-4 text-gray-900">{campaign.title}</h3>
 
@@ -159,7 +168,7 @@ export default function Laporan() {
                     </div>
                 </div>
 
-                {/* 6. FOOTER */}
+                {/* 6. FOOTER HIJAU */}
                 <footer className={`${MINHAJ_PRIMARY} text-white px-6 py-10 mt-auto`}>
                     <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 text-sm">
                         <div>
