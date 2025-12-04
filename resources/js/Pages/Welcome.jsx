@@ -68,7 +68,7 @@ export default function Welcome({ auth }) {
                             <h2 className="text-5xl font-extrabold leading-tight drop-shadow">Membangun<br/>pesantren<br/>misbahul minhaj</h2>
                             <p className="mt-4 text-sm text-white">Bergabunglah dengan gerakan kebaikan untuk mendukung pembangunan dan pengembangan pesantren. Setiap donasi Anda adalah investasi untuk masa depan generasi Qur'ani yang mandiri dan berdaya.</p>
                             <div className="mt-6">
-                                <Link href="/donate" className="inline-block">
+                                <Link href={('donasi')} className="inline-block">
                                     <button type="button" className={`rounded-md ${MINHAJ_CTA_COLOR} px-6 py-2 shadow-sm font-medium hover:brightness-95 transition`}>Donasi Sekarang</button>
                                 </Link>
                             </div>

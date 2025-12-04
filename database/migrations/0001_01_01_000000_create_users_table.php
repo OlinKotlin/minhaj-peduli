@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // ===== TAMBAHAN FIELD ROLE & STATUS =====
+            $table->string('role')->default('user');     // admin / user
+            $table->string('status')->default('active'); // active / suspended
+
             $table->rememberToken();
             $table->timestamps();
         });

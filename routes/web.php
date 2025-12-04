@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminSubmissionController;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request; // Pastikan Request diimport
+use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 
 // ============================
 //      HALAMAN UTAMA
@@ -65,3 +69,25 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// ============================
+//      ROUTE Dashboard ADMIN
+// ============================
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard
+    Route::get('/dashboardadmin', [AdminUserController::class, 'dashboardadmin'])->name('dashboardadmin');
+
+    // Users CRUD
+    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Submissions
+    Route::put('/submissions/{submission}/update-status', [AdminSubmissionController::class, 'updateStatus'])
+        ->name('submissions.update-status');
+
+    Route::get('/submissions/{submission}', [AdminSubmissionController::class, 'show'])
+        ->name('submissions.show');
+});
+
