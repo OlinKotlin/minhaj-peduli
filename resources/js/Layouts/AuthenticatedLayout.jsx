@@ -30,6 +30,16 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+
+                                {/* Link Admin Dashboard - Hanya muncul untuk admin */}
+                                {user.role === 'admin' && (
+                                    <NavLink
+                                        href={route('admin.dashboard')}
+                                        active={route().current('admin.dashboard')}
+                                    >
+                                        Admin Dashboard
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
@@ -43,6 +53,13 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
+
+                                                {/* Badge Role */}
+                                                {user.role === 'admin' && (
+                                                    <span className="ms-2 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800">
+                                                        Admin
+                                                    </span>
+                                                )}
 
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
@@ -66,6 +83,16 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Profile
                                         </Dropdown.Link>
+
+                                        {/* Link Admin Dashboard di dropdown juga */}
+                                        {user.role === 'admin' && (
+                                            <Dropdown.Link
+                                                href={route('admin.dashboard')}
+                                            >
+                                                Admin Dashboard
+                                            </Dropdown.Link>
+                                        )}
+
                                         <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
@@ -121,6 +148,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
+                {/* Mobile Navigation */}
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
@@ -134,15 +162,35 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+
+                        {/* Link Admin Dashboard untuk mobile */}
+                        {user.role === 'admin' && (
+                            <ResponsiveNavLink
+                                href={route('admin.dashboard')}
+                                active={route().current('admin.dashboard')}
+                            >
+                                Admin Dashboard
+                            </ResponsiveNavLink>
+                        )}
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4">
                         <div className="px-4">
-                            <div className="text-base font-medium text-gray-800">
-                                {user.name}
-                            </div>
-                            <div className="text-sm font-medium text-gray-500">
-                                {user.email}
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="text-base font-medium text-gray-800">
+                                        {user.name}
+                                    </div>
+                                    <div className="text-sm font-medium text-gray-500">
+                                        {user.email}
+                                    </div>
+                                </div>
+                                {/* Badge Role di mobile */}
+                                {user.role === 'admin' && (
+                                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
+                                        Admin
+                                    </span>
+                                )}
                             </div>
                         </div>
 
