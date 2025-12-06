@@ -73,21 +73,33 @@ require __DIR__.'/auth.php';
 // ============================
 //      ROUTE Dashboard ADMIN
 // ============================
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
     // Dashboard
-    Route::get('/dashboardadmin', [AdminUserController::class, 'dashboardadmin'])->name('dashboardadmin');
+    Route::get('/dashboardadmin', [AdminUserController::class, 'dashboard'])
+        ->name('dashboardadmin');
 
     // Users CRUD
-    Route::post('/users', [AdminUserController::class, 'store'])->name('users.store');
-    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::post('/users', [AdminUserController::class, 'store'])
+        ->name('users.store');
+
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])
+        ->name('users.update');
+
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])
+        ->name('users.destroy');
 
     // Submissions
-    Route::put('/submissions/{submission}/update-status', [AdminSubmissionController::class, 'updateStatus'])
+    Route::put('/submissions/{submission}/update-status',
+        [AdminSubmissionController::class, 'updateStatus'])
         ->name('submissions.update-status');
 
-    Route::get('/submissions/{submission}', [AdminSubmissionController::class, 'show'])
+    Route::get('/submissions/{submission}',
+        [AdminSubmissionController::class, 'show'])
         ->name('submissions.show');
 });
+
 

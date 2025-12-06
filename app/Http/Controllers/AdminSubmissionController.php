@@ -9,21 +9,34 @@ use Inertia\Inertia;
 
 class AdminSubmissionController extends Controller
 {
+    /**
+     * Update the status of a submission
+     */
     public function updateStatus(Request $request, Submission $submission)
     {
+        // Validasi input
         $request->validate([
-            'status' => 'required|in:pending,approved,rejected'
+            'status' => 'required|in:pending,approved,rejected',
         ]);
 
+        // Pastikan hanya admin yang bisa mengubah status
+   
+
+        // Update status
         $submission->update([
             'status' => $request->status
         ]);
 
-        return back();
+        return back()->with('success', 'Status berhasil diperbarui.');
     }
 
+    /**
+     * Show a single submission
+     */
     public function show(Submission $submission)
     {
+
+
         return Inertia::render('SubmissionDetail', [
             'submission' => $submission
         ]);
