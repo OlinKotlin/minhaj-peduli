@@ -1,0 +1,175 @@
+import { Head, Link, router } from '@inertiajs/react'; // Pastikan import router ada
+import { MapPin, Phone, Mail } from 'lucide-react';
+
+export default function PembayaranDonasi({ auth, id, data }) {
+    // Data dummy program
+    const programTitle = "Pembangunan Asrama Santri";
+
+    // Simulasi data dari Form (fallback jika kosong)
+    const donatur = {
+        name: data.name || "Hamba Allah",
+        email: data.email || "email@example.com",
+        phone: data.phone || "-",
+        nominal: Number(data.nominal) || 0
+    };
+
+    const uniqueCode = 2;
+    const totalTransfer = donatur.nominal + uniqueCode;
+    const invoiceNo = "MM2025120607634";
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        alert(`Berhasil menyalin: ${text}`);
+    };
+
+    // --- FUNGSI UPDATE: Navigasi ke Halaman Konfirmasi ---
+    const handleManualConfirmation = () => {
+        router.get(route('donasi.konfirmasi', { id: id }), {
+            // Kita kirim lagi datanya ke halaman sebelah
+            name: donatur.name,
+            email: donatur.email,
+            phone: donatur.phone,
+            nominal: donatur.nominal
+        });
+    };
+
+    return (
+        <>
+            <Head title="Pembayaran Donasi" />
+
+            <div className="min-h-screen bg-white text-slate-800 font-sans">
+                {/* --- Navbar --- */}
+                <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
+                    <div className="text-2xl font-bold text-green-700 italic">
+                        Minhaj<span className="text-green-900">Peduli</span>
+                    </div>
+                    <div className="flex items-center space-x-4 text-sm font-semibold">
+                        <Link href={route('donasi.detail', {id: id})} className="text-gray-600 hover:text-green-700">Kembali</Link>
+                    </div>
+                </nav>
+
+                <div className="max-w-4xl mx-auto px-6 py-10">
+
+                    {/* --- Stepper --- */}
+                    <div className="flex justify-center items-center mb-10 md:mb-16">
+                        <div className="flex flex-col items-center relative z-10">
+                            <div className="text-sm font-bold text-gray-700 mb-2">Formulir Donasi</div>
+                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">1</div>
+                        </div>
+                        <div className="h-2 w-20 md:w-40 bg-[#4ade80] -mx-2 mt-6"></div>
+                        <div className="flex flex-col items-center relative z-10">
+                            <div className="text-sm font-bold text-gray-800 mb-2">Pembayaran</div>
+                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md ring-4 ring-green-100 scale-110">2</div>
+                        </div>
+                        <div className="h-2 w-20 md:w-40 bg-[#4ade80] -mx-2 mt-6"></div>
+                        <div className="flex flex-col items-center relative z-10">
+                            <div className="text-sm font-bold text-gray-600 mb-2">Selesai</div>
+                            <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 font-bold text-lg">3</div>
+                        </div>
+                    </div>
+
+                    {/* --- Content Utama --- */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-2xl font-bold text-gray-800 mb-2">Alhamdulillah,</h1>
+                        <p className="text-sm md:text-base text-gray-600">
+                            Terima kasih Bapak <span className="font-bold">{donatur.name}</span> telah bersedia mengisi formulir kesediaan donasi.
+                        </p>
+                    </div>
+
+                    <div className="bg-white border border-gray-300 rounded-lg overflow-hidden mb-8 shadow-sm">
+                        {/* Rincian Data */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Nama Lengkap</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">{donatur.name}</div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">E-mail</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">{donatur.email}</div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Nomor Telepon</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">{donatur.phone}</div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">No. Invoice</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <div className="font-medium">{invoiceNo}</div>
+                                <button onClick={() => copyToClipboard(invoiceNo)} className="text-blue-600 hover:text-blue-800 text-sm underline mt-1 cursor-pointer">Salin nomor invoice</button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Bank Tujuan</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="text-2xl font-black text-blue-900 italic tracking-tighter">BTN <span className="text-[#bf9000] font-serif not-italic">Syariah</span></div>
+                                </div>
+                                <div className="text-sm text-gray-600 mb-1">An. Yayasan Minhajul Misbah Al Jadid.</div>
+                                <div className="flex items-center gap-2">
+                                    <span className="font-bold text-lg tracking-wider">20022228422</span>
+                                    <button onClick={() => copyToClipboard('20022228422')} className="text-blue-600 hover:text-blue-800 text-sm underline cursor-pointer">Salin nomor rekening</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Jumlah</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <div className="text-xl font-bold flex items-center">
+                                    Rp {new Intl.NumberFormat('id-ID').format(donatur.nominal)}<span className="text-red-600">.{String(uniqueCode).padStart(3, '0')}</span>
+                                </div>
+                                <div className="text-sm text-red-600 italic mt-2">*PENTING! (Mohon transfer sejumlah di atas).</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Tombol Aksi */}
+                    <div className="flex flex-col items-center gap-4">
+                        {/* UPDATE TOMBOL DI SINI */}
+                        <button
+                            onClick={handleManualConfirmation}
+                            className="bg-[#fde047] hover:bg-yellow-400 text-yellow-900 font-bold py-3 px-8 rounded-full shadow-md w-full md:w-auto transition transform active:scale-95"
+                        >
+                            Konfirmasi manual
+                        </button>
+
+                        <Link href="/" className="bg-[#4ade80] hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full shadow-md w-full md:w-auto text-center transition transform active:scale-95">
+                            Sudah sesuai nominal
+                        </Link>
+                    </div>
+
+                </div>
+
+                {/* Footer */}
+                <footer className="w-full mt-10">
+                    <div className="bg-green-50 py-10 px-6 text-green-900">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+                            <div className="flex flex-col justify-start md:w-1/3">
+                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">MinhajPeduli</h2>
+                                <p className="text-lg font-medium text-green-800">Pondok Pesantren AL-Minhaj</p>
+                            </div>
+                            <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start"><MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" /><span className="text-green-800 leading-relaxed">Desa kuripan Kel.Kuripan<br />Kec. Ciseeng, Bogor, Jawa Barat</span></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Hubungi Kami</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-center"><Mail className="w-6 h-6 text-green-700 mr-3" /><a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a></li>
+                                        <li className="flex items-center"><Phone className="w-6 h-6 text-green-700 mr-3" /><a href="tel:082108210821" className="text-green-800 hover:text-green-600 transition">082108210821</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white py-4 text-center border-t border-green-200">
+                        <p className="text-sm text-gray-700 font-medium flex items-center justify-center">
+                            <span className="text-lg mr-1">©</span> 2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
+                        </p>
+                    </div>
+                </footer>
+            </div>
+        </>
+    );
+}

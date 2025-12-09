@@ -49,8 +49,15 @@ export default function Welcome({ auth }) {
                         <Link href={route('login')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
                             Beranda
                         </Link>
-                        <a href="#tentang" className="text-gray-600 hover:text-green-700 transition">Tentang</a>
-                        <a href="#donasi" className="text-gray-600 hover:text-green-700 transition">Donasi</a>
+
+                        <Link href={route('about')} className="text-gray-600 hover:text-green-700 transition">
+                            Tentang
+                        </Link>
+
+                        {/* UPDATE: Link Donasi sekarang mengarah ke route('donasi') */}
+                        <Link href={route('donasi')} className="text-gray-600 hover:text-green-700 transition">
+                            Donasi
+                        </Link>
 
                         {/* Logika Auth User Dashboard */}
                         {auth?.user && (
@@ -175,8 +182,9 @@ export default function Welcome({ auth }) {
                                             <p>Terkumpul: <span className="font-bold text-green-700">{prog.collected}</span></p>
                                             <p>Target: {prog.target}</p>
                                         </div>
+                                        {/* Link Donasi di Kartu Program */}
                                         <Link
-                                            href={auth?.user ? '/donasi/create' : route('login')}
+                                            href={route('donasi')}
                                             className="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded shadow-md transform active:scale-95 transition"
                                         >
                                             Donasi Sekarang
@@ -191,9 +199,6 @@ export default function Welcome({ auth }) {
                 {/* --- Footer (Layout Updated: Logo Kiri, Info Kanan) --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
-                        {/* Menggunakan Flexbox (justify-between) untuk memisahkan Kiri dan Kanan.
-                            md:flex-row akan membuat layout horizontal di layar besar.
-                        */}
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
 
                             {/* --- BAGIAN KIRI: Branding --- */}
@@ -207,7 +212,6 @@ export default function Welcome({ auth }) {
                             </div>
 
                             {/* --- BAGIAN KANAN: Container untuk Alamat & Kontak --- */}
-                            {/* Mengelompokkan Alamat dan Kontak agar berada di sisi kanan */}
                             <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
 
                                 {/* Kolom Alamat */}
@@ -244,8 +248,6 @@ export default function Welcome({ auth }) {
                                 </div>
 
                             </div>
-                            {/* --- Akhir Bagian Kanan --- */}
-
                         </div>
                     </div>
 

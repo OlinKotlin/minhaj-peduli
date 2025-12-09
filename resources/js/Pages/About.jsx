@@ -1,150 +1,262 @@
 import { Head, Link } from '@inertiajs/react';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
-export default function About() {
-    // Variabel warna sesuai desain
-    const MINHAJ_PRIMARY = "bg-green-600";
-    const MINHAJ_BG = "bg-green-50";
-    const MINHAJ_CARD_BORDER = "border-green-300";
-    const MINHAJ_ICON_COLOR = "text-green-600";
-
-    // Data Dummy Tim
-    const teamMembers = [
-        { name: "Ketua", title: "Ketua Yayasan" },
-        { name: "Sekretaris", title: "Sekretaris" },
-        { name: "Bendahara", title: "Bendahara" },
-        { name: "Humas", title: "Hubungan Masyarakat" },
-    ];
-
-    // Komponen Ikon Orang
-    const PersonIcon = ({ className }) => (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-        </svg>
-    );
-
+export default function About({ auth }) {
     return (
         <>
             <Head title="Tentang Kami" />
 
-            <div className={`min-h-screen ${MINHAJ_BG} text-slate-800 flex flex-col font-sans`}>
+            <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* 1. Header / Top Bar */}
-                <div className={`${MINHAJ_PRIMARY} text-white shadow-md`}>
-                    <div className="mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
-                        <div className="font-serif font-semibold text-lg">MinhajPeduli</div>
-                        <div className="flex space-x-6 text-sm font-medium items-center">
-                            {/* Menu Aktif: Profil (Updated style to match Laporan image) */}
-                            <span className="px-3 py-1 bg-black/10 rounded-md font-bold border-b-2 border-white cursor-default">Profil</span>
-
-                            <Link href={route('laporan')} className="hover:text-green-200 text-white/90">Laporan</Link>
-                            <Link href={route('donasi')} className="hover:text-green-200 text-white/90">Donasi</Link>
-                        </div>
+                {/* --- Navbar (Konsisten dengan Welcome.jsx) --- */}
+                <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
+                    <div className="text-2xl font-bold text-green-700 italic">
+                        Minhaj<span className="text-green-900">Peduli</span>
                     </div>
-                </div>
 
-                <div className="mx-auto max-w-6xl px-6 py-10 flex-grow w-full">
+                    <div className="flex items-center space-x-4 text-sm font-semibold">
+                        <Link href="/" className="text-gray-600 hover:text-green-700 transition">
+                            Beranda
+                        </Link>
 
-                    {/* 2. Bagian Judul Utama dengan Logo */}
-                    <div className="text-center mb-12">
-                        {/* Logo Pindah ke Atas */}
-                        <div className="flex justify-center mb-6">
-                            <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden border border-green-300 p-1">
+                        {/* Halaman Saat Ini (Aktif) */}
+                        <Link href={route('about')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
+                            Tentang
+                        </Link>
+
+                        {/* UPDATE: Link Donasi sekarang mengarah ke route('donasi') */}
+                        <Link href={route('donasi')} className="text-gray-600 hover:text-green-700 transition">
+                            Donasi
+                        </Link>
+
+                        {auth?.user && (
+                            <Link
+                                href={route('dashboard')}
+                                className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50"
+                            >
+                                Dashboard
+                            </Link>
+                        )}
+                    </div>
+                </nav>
+
+                {/* --- Header / Hero Section --- */}
+                <section className="bg-green-50 py-12 px-6">
+                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+                        <div className="md:w-1/2">
+                            <h1 className="text-3xl md:text-4xl font-bold text-green-900 mb-2">
+                                Selamat Datang di Pondok Pesantren Al-Minhaj
+                            </h1>
+                            <p className="text-xl text-green-700 font-medium italic">
+                                Mari Berkenalan Lebih Jauh!
+                            </p>
+                        </div>
+                        <div className="md:w-1/2 flex justify-center md:justify-end">
+                            {/* Placeholder Gambar Konstruksi Atas */}
+                            <div className="bg-green-200 p-2 rounded-3xl shadow-lg w-full max-w-md h-64 overflow-hidden relative">
                                 <img
-                                    src="/images/logo-minhaj.png"
-                                    alt="Logo Minhaj"
-                                    className="w-full h-full object-contain"
-                                    onError={(e) => { e.target.style.display = 'none'; }}
+                                    src="/images/pesantren1.png"
+                                    alt="Konstruksi Pesantren"
+                                    className="w-full h-full object-cover rounded-2xl"
                                 />
                             </div>
                         </div>
-
-                        {/* Teks "Tentang Kami" di Bawah Logo */}
-                        <h1 className="text-4xl font-bold text-slate-800 mb-2">Tentang Kami</h1>
-
-                        {/* Judul Pesantren Hijau */}
-                        <h2 className="text-3xl font-bold text-green-600 font-serif">Pondok Pesantren AL Minhaj</h2>
                     </div>
+                </section>
 
-                    {/* 3. Foto Konstruksi */}
-                    <div className="mb-10 overflow-hidden rounded-xl shadow-lg">
-                        <div className="grid md:grid-cols-2 gap-0">
-                            <img
-                                src="/images/pesantren2.png"
-                                alt="Fondasi"
-                                className="w-full h-64 object-cover"
-                                onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Foto+Tidak+Ditemukan'; }}
-                            />
-                            <img
-                                src="/images/pesantren1.png"
-                                alt="Konstruksi"
-                                className="w-full h-64 object-cover"
-                                onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=Foto+Tidak+Ditemukan'; }}
-                            />
+                {/* --- Tentang Kami Section --- */}
+                <section className="bg-green-700 py-16 px-6 text-white">
+                    <div className="max-w-6xl mx-auto">
+                        <h2 className="text-2xl font-bold uppercase border-b-2 border-green-400 inline-block mb-8">
+                            Tentang Kami
+                        </h2>
+
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                             {/* Gambar Pondasi */}
+                            <div className="md:w-1/3 w-full">
+                                <img
+                                    src="/images/pesantren2.png"
+                                    alt="Pondasi Pesantren"
+                                    className="w-full h-64 object-cover rounded-xl border-4 border-green-600 shadow-xl"
+                                />
+                            </div>
+
+                            {/* Teks Deskripsi */}
+                            <div className="md:w-2/3 text-sm md:text-base leading-relaxed space-y-4 text-green-50 text-justify">
+                                <p>
+                                    Pondok Pesantren Al-Minhaj adalah lembaga pendidikan Islam yang berfokus pada pembinaan generasi Qur'ani melalui program tahfidz Al-Qur'an tingkat SD dan SMP. Kami memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf, sebagai bentuk kepedulian dan dakwah pendidikan.
+                                </p>
+                                <p>
+                                    Dengan bimbingan ustadz berpengalaman, lingkungan yang asri, serta kurikulum tahfidz yang terarah, Al-Minhaj berkomitmen mencetak hafidz dan hafidzah yang berakhlak mulia dan bermanfaat bagi umat.
+                                </p>
+                            </div>
                         </div>
                     </div>
+                </section>
 
-                    {/* 4. Teks Perjalanan Kami */}
-                    <section className="mb-12">
-                        <h2 className="text-2xl font-bold mb-4 text-slate-800 lowercase">perjalanan kami</h2>
-                        <div className="text-gray-700 leading-relaxed text-sm text-justify space-y-4">
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </p>
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                            </p>
-                        </div>
-                    </section>
+                {/* --- Visi & Misi Section --- */}
+                <section className="bg-[#dcfce7] py-16 px-6">
+                    <div className="max-w-5xl mx-auto space-y-16">
 
-                    {/* 5. Visi Misi Cards */}
-                    <section className="grid md:grid-cols-3 gap-6 mb-12">
-                        <div className="bg-white p-8 rounded-xl shadow-sm text-center flex flex-col items-center border-t-4 border-green-600">
-                            <h3 className="text-xl font-bold mb-3 text-green-800">Visi</h3>
-                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+                        {/* VISI */}
+                        <div className="text-center">
+                            <div className="flex items-center justify-center gap-4 mb-6">
+                                <div className="h-px w-20 bg-green-700"></div>
+                                <h2 className="text-2xl font-bold text-green-800 uppercase">VISI</h2>
+                                <div className="h-px w-20 bg-green-700"></div>
+                            </div>
+                            <div className="bg-green-600 text-white p-8 rounded-xl shadow-lg italic text-lg leading-relaxed">
+                                "Membangun pusat pendidikan Islam dengan model pesantren dengan dukungan bangunan fisik (gedung pendidikan dan masjid) yang berkualitas serta sarana dan prasarana modern yang mendukung proses pembelajaran para santri"
+                            </div>
                         </div>
 
-                        <div className="bg-white p-8 rounded-xl shadow-sm text-center flex flex-col items-center border-t-4 border-green-600">
-                            <h3 className="text-xl font-bold mb-3 text-green-800">Misi</h3>
-                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
-                        </div>
+                        {/* MISI */}
+                        <div>
+                            <div className="flex items-center justify-center gap-4 mb-6">
+                                <div className="h-px w-20 bg-green-700"></div>
+                                <h2 className="text-2xl font-bold text-green-800 uppercase">MISI</h2>
+                                <div className="h-px w-20 bg-green-700"></div>
+                            </div>
 
-                        <div className="bg-white p-8 rounded-xl shadow-sm text-center flex flex-col items-center border-t-4 border-green-600">
-                            <h3 className="text-xl font-bold mb-3 text-green-800">Nilai islam</h3>
-                            <p className="text-sm text-gray-600">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
-                        </div>
-                    </section>
-
-                    {/* 6. Tim Kami */}
-                    <section className="mb-10">
-                        <h2 className="text-2xl font-bold mb-8 text-slate-800">Tim kami</h2>
-                        <div className="flex justify-center gap-10 flex-wrap">
-                            {teamMembers.map((member, index) => (
-                                <div key={index} className="flex flex-col items-center text-center w-32">
-                                    <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-4 border-2 border-green-600 text-green-600 shadow-sm hover:bg-green-100 transition-colors">
-                                        <PersonIcon className="w-10 h-10" />
-                                    </div>
-                                    <p className="font-bold text-slate-800 text-sm">{member.name}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{member.title}</p>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify">
+                                    Menjadikan pesantren (ma'had) sebagai tempat yang memadai sekaligus menyenangkan bagi para santri maupun para pendidik (ustadz/guru) dalam proses belajar-mengajar, baik menghafal al-Quran maupun mengkaji kitab kuning.
                                 </div>
-                            ))}
+                                <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify">
+                                    Menjadikan pesantren (ma'had) sebagai tempat yang mendukung proses percepatan pembinaan dan pengkaderan generasi penghapal dan pejuang al-Quran, khususnya dari kalangan anak-anak yatim dan dhuafa.
+                                </div>
+                            </div>
                         </div>
-                    </section>
-                </div>
 
-                {/* 7. Footer */}
-                <footer className={`${MINHAJ_PRIMARY} text-white px-6 py-8 mt-auto`}>
-                    <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center text-sm gap-4">
-                        <div className="max-w-xs">
-                            <p className="font-semibold mb-1">MinhajPeduli</p>
-                            <p className="text-green-100">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
+                    </div>
+                </section>
+
+                {/* --- Tujuan Diagram Section --- */}
+                <section className="bg-green-100 py-16 px-6 relative overflow-hidden">
+                    <div className="max-w-4xl mx-auto text-center relative z-10">
+                        <h2 className="text-2xl font-bold text-green-800 uppercase mb-12 underline decoration-green-500 decoration-4 underline-offset-8">
+                            TUJUAN
+                        </h2>
+
+                        {/* Layout Diagram */}
+                        <div className="flex flex-col items-center">
+                            {/* Baris Atas (2 Kotak) */}
+                            <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16">
+                                {/* Kotak Kiri */}
+                                <div className="bg-green-200 border-2 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                                    <p className="text-green-900 font-semibold text-sm">
+                                        Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
+                                    </p>
+                                </div>
+
+                                {/* Kotak Kanan (Kosong di gambar referensi, tapi disiapkan strukturnya) */}
+                                <div className="bg-green-200 border-2 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                                    <p className="text-green-900 font-semibold text-sm opacity-50">
+                                        (Area Kosong / Tambahan Tujuan)
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Garis Penghubung (Visual CSS) */}
+                            {/* Ini trik sederhana menggunakan border untuk membuat garis V */}
+                            <div className="hidden md:block absolute top-[16rem] w-[50%] h-16 border-l-2 border-r-2 border-b-2 border-green-800 rounded-b-full pointer-events-none opacity-50"></div>
+
+                            {/* Baris Bawah (1 Kotak Tengah) */}
+                            <div className="bg-green-200 border-2 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4">
+                                <div className="absolute -top-6 text-green-800 md:hidden">↓</div> {/* Panah hp */}
+                                <p className="text-green-900 font-semibold text-sm">
+                                    Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
+                                </p>
+                            </div>
                         </div>
-                        <div className="text-left md:text-right">
-                            <p className="font-bold text-lg">192849047012759</p>
-                            <p className="text-green-100">minhaj@gmail.com</p>
-                            <p className="text-green-100">Ciseeng, bogor, jawa barat</p>
+                    </div>
+                </section>
+
+                {/* --- Ketua Yayasan Section --- */}
+                <section className="bg-green-700 py-16 px-6 text-white mt-10">
+                    <div className="max-w-5xl mx-auto">
+                        <h2 className="text-center text-2xl font-bold uppercase mb-10 border-b border-green-500 inline-block pb-2 px-10">
+                            KETUA YAYASAN
+                        </h2>
+
+                        <div className="flex flex-col md:flex-row items-center gap-10">
+                            {/* Foto Profil */}
+                            <div className="bg-white p-3 shadow-2xl transform -rotate-2 md:rotate-0 hover:rotate-0 transition duration-500">
+                                <div className="w-64 h-80 bg-gray-300 overflow-hidden">
+                                    {/* GANTI DENGAN FOTO KETUA */}
+                                    <img
+                                        src="/images/ketua-yayasan.jpg"
+                                        alt="Nopal Aditya Sadik"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {e.target.src = "https://via.placeholder.com/300x400?text=Foto+Ketua"}}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Teks Quote & Nama */}
+                            <div className="flex-1 text-center md:text-left">
+                                <h3 className="text-4xl font-bold font-serif italic mb-4">Loremipsum</h3>
+                                <p className="text-green-100 italic text-lg leading-relaxed mb-6">
+                                    “Ketua Yayasan Pesantren Tahfidz Al-Minhaj adalah sosok yang berdedikasi dalam memajukan dakwah dan pendidikan Qur’ani, serta memastikan seluruh program berjalan dengan penuh integritas, keteladanan, dan rasa tanggung jawab.”
+                                </p>
+                                <div className="text-right mt-4">
+                                    <p className="font-bold text-xl tracking-wide">Nopal Aditya Sadik S.kom</p>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </section>
+
+                {/* --- Footer (Sama persis dengan Welcome.jsx) --- */}
+                <footer className="w-full mt-0 bg-green-50">
+                     <div className="py-10 px-6 text-green-900">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+
+                            {/* Kiri */}
+                            <div className="flex flex-col justify-start md:w-1/3">
+                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">MinhajPeduli</h2>
+                                <p className="text-lg font-medium text-green-800">Pondok Pesantren AL-Minhaj</p>
+                            </div>
+
+                            {/* Kanan */}
+                            <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start">
+                                            <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" />
+                                            <span className="text-green-800 leading-relaxed">
+                                                Desa kuripan Kel.Kuripan<br />
+                                                Kec. Ciseeng, Bogor, Jawa Barat
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Kontak kami</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-center">
+                                            <Mail className="w-6 h-6 text-green-700 mr-3" />
+                                            <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a>
+                                        </li>
+                                        <li className="flex items-center">
+                                            <Phone className="w-6 h-6 text-green-700 mr-3" />
+                                            <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">081234567890</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white py-4 text-center border-t border-green-200">
+                        <p className="text-sm text-gray-700 font-medium flex items-center justify-center">
+                            <span className="text-lg mr-1">©</span>
+                            2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
+                        </p>
                     </div>
                 </footer>
+
             </div>
         </>
     );

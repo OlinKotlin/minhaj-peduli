@@ -1,134 +1,335 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { MapPin, Phone, Mail, Check, X } from 'lucide-react'; // Tambahkan Check dan X
 import { useState } from 'react';
 
-// Menerima props dari URL (dikirim dari FormDonasi)
-export default function KonfirmasiPembayaran({ name, amount, payment_method }) {
-    const MINHAJ_PRIMARY = "bg-green-600";
-    const MINHAJ_BG = "bg-green-50";
-
-    // Data Rekening
-    const getPaymentDetails = (method) => {
-        switch(method) {
-            case 'ShopeePay': return { number: '085218973434', name: 'Achmad adrian' };
-            case 'Dana': return { number: '081234567890', name: 'Yayasan Minhaj' };
-            case 'Rekening': return { number: '123-456-7890', name: 'Yayasan Minhaj (BSI)' };
-            default: return { number: '085218973434', name: 'Achmad adrian' };
-        }
+export default function KonfirmasiPembayaran({ auth, id, data }) {
+    // Data simulasi dari halaman sebelumnya
+    const donatur = {
+        name: data.name || "Coco",
+        email: data.email || "tes@example.com",
+        phone: data.phone || "081234567890",
+        nominal: Number(data.nominal) || 50000
     };
 
-    const paymentInfo = getPaymentDetails(payment_method);
+    const invoiceNo = "MM2025120607634";
+    const uniqueCode = 2;
+    const totalTransfer = donatur.nominal + uniqueCode;
 
-    // Format Rupiah
-    const formatRupiah = (val) => {
-        const number = Number(val);
-        if (isNaN(number)) return "Rp 0";
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0
-        }).format(number);
+    // State untuk form input
+    const [bankOwner, setBankOwner] = useState('');
+    const [selectedBank, setSelectedBank] = useState('BCA');
+    const [paymentDate, setPaymentDate] = useState('2025-12-06');
+    const [notes, setNotes] = useState('');
+
+    // State untuk Modal Popup
+    const [showModal, setShowModal] = useState(false);
+
+    const formatRupiah = (num) => {
+        return new Intl.NumberFormat('id-ID').format(num);
     };
 
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text);
-        alert("Nomor rekening berhasil disalin!");
+    // Fungsi saat tombol Konfirmasi diklik
+    const handleSubmit = () => {
+        // Di sini bisa ditambahkan validasi form jika diperlukan
+        // Jika valid, munculkan modal
+        setShowModal(true);
     };
 
-    // Aksi Tombol
-    const handlePaymentComplete = () => {
-        // Di sini nanti logika simpan ke database
-        alert(`Terima kasih ${name}! Pembayaran sebesar ${formatRupiah(amount)} sedang diproses.`);
-        router.visit('/donasi');
-    };
-
-    const handleCancel = () => {
-         if(confirm("Batalkan donasi?")) {
-            router.visit('/donasi');
-         }
+    // Fungsi saat tombol Oke diklik (Redirect ke Beranda)
+    const handleFinish = () => {
+        router.visit('/');
     };
 
     return (
         <>
             <Head title="Konfirmasi Pembayaran" />
 
-            <div className={`min-h-screen ${MINHAJ_BG} text-slate-800 flex flex-col font-sans`}>
+            <div className={`min-h-screen bg-white text-slate-800 font-sans ${showModal ? 'overflow-hidden' : ''}`}>
 
-                {/* Header (Sederhana) */}
-                <div className={`${MINHAJ_PRIMARY} text-white shadow-md py-4`}>
-                    <div className="mx-auto max-w-6xl px-6 text-center md:text-left">
-                        <div className="font-serif font-semibold text-lg">MinhajPeduli</div>
+                {/* --- Navbar --- */}
+                <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
+                    <div className="text-2xl font-bold text-green-700 italic">
+                        Minhaj<span className="text-green-900">Peduli</span>
                     </div>
-                </div>
+                    <div className="flex items-center space-x-4 text-sm font-semibold">
+                        <Link href="/" className="text-gray-600 hover:text-green-700">Beranda</Link>
+                        <Link href={route('about')} className="text-gray-600 hover:text-green-700">Tentang</Link>
+                        <Link href={route('donasi')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
+                            Donasi
+                        </Link>
+                    </div>
+                </nav>
 
-                <div className="flex-grow flex justify-center px-4 py-10 items-center">
-                    <div className="w-full max-w-lg bg-white rounded-xl shadow-xl p-8 border-t-4 border-green-500 relative">
+                <div className="max-w-4xl mx-auto px-6 py-10">
 
-                        {/* Ikon & Judul */}
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 text-slate-800 mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-                                </svg>
-                            </div>
-                            <h2 className="text-2xl font-serif font-bold text-slate-900">Selesaikan pembayaran</h2>
+                    {/* --- Stepper --- */}
+                    <div className="flex justify-center items-center mb-12">
+                        {/* Step 1 */}
+                        <div className="flex flex-col items-center relative z-10">
+                            <div className="text-sm font-bold text-gray-700 mb-2">Formulir Donasi</div>
+                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">1</div>
                         </div>
-
-                        <div className="space-y-6">
-                            {/* Field Nama Donatur (Read Only) */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-900 mb-2">Nama donatur</label>
-                                <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-800 font-medium">
-                                    {name || "Hamba Allah"}
-                                </div>
-                            </div>
-
-                            {/* Field Jumlah Transfer (Read Only) */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-900 mb-2">Jumlah tranfer</label>
-                                <div className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-gray-800 font-medium text-lg">
-                                    {formatRupiah(amount)}
-                                </div>
-                            </div>
-
-                            {/* Instruksi & Rekening */}
-                            <div className="bg-green-50 p-5 rounded-lg border border-green-200 text-center">
-                                <p className="text-sm text-gray-600 mb-2">Silakan transfer ke:</p>
-                                <p className="text-gray-800 font-serif text-lg font-bold mb-2">{payment_method || "Metode Pembayaran"}</p>
-
-                                <button
-                                    onClick={() => copyToClipboard(paymentInfo.number)}
-                                    className="flex justify-center items-center gap-2 bg-white border border-green-300 rounded-lg py-2 px-4 mx-auto mb-2 hover:bg-green-100 transition cursor-pointer group"
-                                    title="Salin Nomor Rekening"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500 group-hover:text-green-600">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.381a9.06 9.06 0 0 1-1.5.124m7.5-3.977a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5-10.381V5.625a1.125 1.125 0 0 0-1.125-1.125h-3.375c-1.505 0-2.881.727-3.75 1.875m0 0A9.015 9.015 0 0 1 20.25 10.5v1.125m-18 3.375c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h9.75a1.125 1.125 0 0 1 1.125 1.125V16.875" />
-                                    </svg>
-                                    <span className="font-mono text-xl font-bold text-slate-800">{paymentInfo.number}</span>
-                                </button>
-
-                                <p className="text-xs text-gray-500 italic">a.n. {paymentInfo.name}</p>
-                            </div>
-
-                            {/* Tombol Aksi */}
-                            <div className="pt-2 space-y-3">
-                                <button
-                                    onClick={handlePaymentComplete}
-                                    className="w-full py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold shadow-md transition active:scale-95"
-                                >
-                                    Saya Sudah Bayar
-                                </button>
-
-                                <button
-                                    onClick={handleCancel}
-                                    className="w-full py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold shadow-md transition active:scale-95"
-                                >
-                                    Batalkan
-                                </button>
-                            </div>
+                        <div className="h-2 w-20 md:w-40 bg-[#4ade80] -mx-2 mt-6"></div>
+                        {/* Step 2 */}
+                        <div className="flex flex-col items-center relative z-10">
+                            <div className="text-sm font-bold text-gray-700 mb-2">Pembayaran</div>
+                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">2</div>
+                        </div>
+                        <div className="h-2 w-20 md:w-40 bg-[#4ade80] -mx-2 mt-6"></div>
+                        {/* Step 3 */}
+                        <div className="flex flex-col items-center relative z-10">
+                            <div className="text-sm font-bold text-gray-700 mb-2">Selesai</div>
+                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">3</div>
                         </div>
                     </div>
+
+                    {/* --- Judul Halaman --- */}
+                    <div className="text-center mb-8">
+                        <h1 className="text-xl md:text-2xl font-bold text-gray-700 uppercase tracking-wide">
+                            Mohon Lengkapi Form<br />Konfirmasi Pembayaran Manual
+                        </h1>
+                        <hr className="mt-4 border-gray-300 w-full" />
+                    </div>
+
+                    {/* --- Form Tabel --- */}
+                    <div className="border border-gray-400 text-sm md:text-base">
+
+                        <div className="border-b border-gray-400 bg-white p-4 font-bold text-gray-700 uppercase">
+                            Formulir Konfirmasi Pembayaran Manual
+                        </div>
+
+                        {/* No. Invoice */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                No. Invoice
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 flex items-center">
+                                {invoiceNo}
+                            </div>
+                        </div>
+
+                        {/* Nama Lengkap */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Nama Lengkap
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 flex items-center">
+                                {donatur.name}
+                            </div>
+                        </div>
+
+                        {/* Nomor Telepon */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Nomor Telepon
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 flex items-center">
+                                {donatur.phone}
+                            </div>
+                        </div>
+
+                        {/* E-mail */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                E-mail
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 flex items-center">
+                                {donatur.email}
+                            </div>
+                        </div>
+
+                        {/* Bank Anda */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Bank Anda *
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 flex flex-col md:flex-row gap-3">
+                                <input
+                                    type="text"
+                                    placeholder="Nama pemilik"
+                                    value={bankOwner}
+                                    onChange={(e) => setBankOwner(e.target.value)}
+                                    className="border border-gray-400 px-3 py-2 w-full md:w-1/2 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                />
+                                <select
+                                    value={selectedBank}
+                                    onChange={(e) => setSelectedBank(e.target.value)}
+                                    className="border border-gray-400 px-3 py-2 w-full md:w-1/3 focus:outline-none focus:ring-1 focus:ring-green-500 bg-white"
+                                >
+                                    <option value="BCA">BCA</option>
+                                    <option value="BRI">BRI</option>
+                                    <option value="MANDIRI">MANDIRI</option>
+                                    <option value="BNI">BNI</option>
+                                    <option value="BSI">BSI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Bank Tujuan */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Bank Tujuan *
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <input
+                                    type="text"
+                                    readOnly
+                                    value="BTN | Yayasan Minhajul Misbah Al Jadid | 20022228422"
+                                    className="w-full border border-gray-400 px-3 py-2 bg-gray-100 text-gray-600 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Jumlah */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Jumlah
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 font-bold flex items-center">
+                                Rp {formatRupiah(donatur.nominal)}.<span className="text-red-600">{String(uniqueCode).padStart(3, '0')}</span>
+                            </div>
+                        </div>
+
+                        {/* Tanggal Bayar */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Tanggal Bayar *
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <input
+                                    type="date"
+                                    value={paymentDate}
+                                    onChange={(e) => setPaymentDate(e.target.value)}
+                                    className="border border-gray-400 px-3 py-2 w-full md:w-1/2 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Bukti Pembayaran */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-400">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-center">
+                                Bukti Pembayaran *
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800 flex flex-col md:flex-row gap-3">
+                                <input
+                                    type="text"
+                                    placeholder="Tidak ada file yang dipilih"
+                                    readOnly
+                                    className="border border-gray-400 px-3 py-2 w-full md:w-1/2 bg-white text-gray-500 italic"
+                                />
+                                <label className="cursor-pointer bg-[#d1d5db] hover:bg-gray-400 text-gray-700 font-semibold py-2 px-6 border border-gray-400 text-center">
+                                    Pilih File
+                                    <input type="file" className="hidden" />
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Catatan */}
+                        <div className="grid grid-cols-1 md:grid-cols-3">
+                            <div className="p-4 font-bold text-gray-700 border-b md:border-b-0 md:border-r border-gray-400 bg-gray-50 md:bg-white flex items-start">
+                                Catatan
+                            </div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <textarea
+                                    placeholder="Silakan isi catatan Anda di sini"
+                                    value={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    rows="4"
+                                    className="w-full border-none focus:outline-none focus:ring-0 resize-none p-0 text-gray-600 placeholder-gray-400"
+                                ></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* --- Tombol Konfirmasi --- */}
+                    <div className="mt-8 flex justify-center border border-t-0 border-gray-400 p-4 bg-white -mt-[1px]">
+                        <button
+                            onClick={handleSubmit}
+                            className="bg-[#86efac] hover:bg-green-400 text-green-900 font-bold py-2 px-16 rounded-full shadow-md transition transform active:scale-95"
+                        >
+                            Konfirmasi
+                        </button>
+                    </div>
+
                 </div>
+
+                {/* --- Footer --- */}
+                <footer className="w-full mt-10">
+                    <div className="bg-green-50 py-10 px-6 text-green-900">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+                            <div className="flex flex-col justify-start md:w-1/3">
+                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">MinhajPeduli</h2>
+                                <p className="text-lg font-medium text-green-800">Pondok Pesantren AL-Minhaj</p>
+                            </div>
+                            <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start"><MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" /><span className="text-green-800 leading-relaxed">Desa kuripan Kel.Kuripan<br />Kec. Ciseeng, Bogor, Jawa Barat</span></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Hubungi Kami</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-center"><Mail className="w-6 h-6 text-green-700 mr-3" /><a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a></li>
+                                        <li className="flex items-center"><Phone className="w-6 h-6 text-green-700 mr-3" /><a href="tel:082108210821" className="text-green-800 hover:text-green-600 transition">082108210821</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="bg-white py-4 text-center border-t border-green-200">
+                        <p className="text-sm text-gray-700 font-medium flex items-center justify-center">
+                            <span className="text-lg mr-1">©</span> 2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
+                        </p>
+                    </div>
+                </footer>
+
             </div>
+
+            {/* --- MODAL POPUP --- */}
+            {showModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4">
+                    <div className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6 relative animate-fade-in-up">
+
+                        {/* Tombol Close (X) */}
+                        <button
+                            onClick={() => setShowModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="text-center">
+                            {/* Ikon Centang Hijau */}
+                            <div className="mx-auto w-20 h-20 rounded-full border-4 border-[#22c55e] flex items-center justify-center mb-6">
+                                <Check className="text-[#22c55e] w-10 h-10" strokeWidth={4} />
+                            </div>
+
+                            {/* Judul */}
+                            <h3 className="text-sm font-bold text-gray-900 mb-4 leading-relaxed px-4">
+                                Alhamdulillah! Donasi Jariyah Anda telah berhasil kami terima
+                            </h3>
+
+                            {/* Deskripsi */}
+                            <p className="text-xs text-gray-600 mb-8 leading-relaxed px-2">
+                                Mohon ditunggu, kami akan melakukan verifikasi maksimal 2x24 jam.
+                                Semoga Allah SWT membalas kebaikan Anda dengan pahala yang
+                                berlipat ganda. Aamiin.
+                            </p>
+
+                            {/* Tombol Oke */}
+                            <button
+                                onClick={handleFinish}
+                                className="bg-[#0ea5e9] hover:bg-sky-600 text-white font-semibold py-2 px-12 rounded shadow-md transition"
+                            >
+                                Oke
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
