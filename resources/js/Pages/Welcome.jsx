@@ -1,121 +1,263 @@
 import { Head, Link } from '@inertiajs/react';
-
-// Catatan: Asumsi warna kustom Tailwind CSS Anda terdefinisi di tailwind.config.js,
-// kira-kira seperti ini:
-// theme: {
-//     extend: {
-//         colors: {
-//             'minhaj': '#10b981', // Hijau gelap/primary
-//             'minhaj-50': '#f0fdf4', // Hijau sangat muda (background)
-//             'minhaj-100': '#dcfce7',
-//             'minhaj-cta': '#a7f3d0', // Hijau terang/CTA
-//         },
-//     },
-// },
+import { Check, MapPin, Phone, Mail, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export default function Welcome({ auth }) {
-    // Variabel warna kustom (disesuaikan dari asumsi di atas)
-    const MINHAJ_PRIMARY = "bg-green-600";
-    const MINHAJ_CTA_COLOR = "bg-green-200 text-green-800";
-    const MINHAJ_BORDER_COLOR = "border-green-300"; // Menambahkan definisi border
+    // Data Statistik
+    const statsData = [
+        { val: "4", label: "Program Donasi" },
+        { val: "Rp 31.233.890", label: "Total Donasi Terkumpul" },
+        { val: "265", label: "Total Donatur" }
+    ];
+
+    // Data Tujuan Program
+    const goalsData = [
+        {
+            title: "Meningkatkan Akses dan Kualitas Pembelajaran Keagamaan",
+            desc: "Program pembangunan pondok pesantren diutamakan untuk memperluas kesempatan masyarakat mendapatkan pendidikan agama yang menyeluruh dan bermutu tinggi."
+        },
+        {
+            title: "Menyediakan Fasilitas Fisik dan Infrastruktur Standar",
+            desc: "Donasi pembangunan ini bertujuan untuk memastikan ketersediaan sarana dan prasarana yang layak, kokoh, dan fungsional untuk mendukung kegiatan pendidikan."
+        },
+        {
+            title: "Menciptakan Ekosistem Pendidikan yang Inovatif",
+            desc: "Melalui program donasi, peran donatur sangat vital dalam membentuk lingkungan belajar di pesantren yang mendorong pengembangan ide baru, kreativitas, dan adaptasi terhadap perkembangan ilmu."
+        }
+    ];
+
+    // Data Program Donasi
+    const programsData = [
+        { title: "Pembangunan Asrama Santri", collected: "Rp 30.000.000", target: "Rp 50.000.000", pct: 60, img: "/images/pesantren1.png" },
+        { title: "Pembangunan Pesantren Tahfidz", collected: "Rp 12.000.000", target: "Rp 20.000.000", pct: 60, img: "/images/pesantren2.png" },
+        { title: "Wakaf AL-Quran dan Buku", collected: "Rp 15.000.000", target: "Rp 50.000.000", pct: 30, img: "/images/pesantren1.png" },
+        { title: "Pembangunan Masjid", collected: "Rp 8.000.000", target: "Rp 10.000.000", pct: 80, img: "/images/pesantren2.png" },
+    ];
 
     return (
         <>
             <Head title="Beranda" />
 
-            {/* Pastikan background sesuai dengan tema login/register */}
-            <div className="min-h-screen bg-green-50 text-slate-800">
+            <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* Top bar (Header) - Menggunakan MINHAJ_PRIMARY untuk konsistensi */}
-                <div className={`${MINHAJ_PRIMARY} text-white`}>
-                    <div className="mx-auto max-w-6xl px-6 py-3 flex justify-between items-center">
-                        <div className="font-serif font-semibold">MinhajPeduli</div>
-                        <div>
-                            {auth?.user ? (
-                                <Link
-                                    href={route('dashboard')}
-                                    className="rounded-md bg-white/20 px-3 py-1 text-sm hover:bg-white/30"
-                                >
-                                    Dashboard
-                                </Link>
-                            ) : (
-                                // Perbaikan Syntax Error di sini: Pastikan semua properti
-                                // berada di dalam tag <Link> tanpa kurung kurawal terpisah.
-                                <Link
-                                    href={route('login')}
-                                    className="rounded-md bg-white text-green-800 px-3 py-1 text-sm font-medium hover:opacity-90"
-                                >
-                                    Masuk {/* Diubah dari 'Login' menjadi 'Masuk' */}
-                                </Link>
-                            )}
-                        </div>
+                {/* --- Navbar --- */}
+                <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
+                    <div className="text-2xl font-bold text-green-700 italic">
+                        Minhaj<span className="text-green-900">Peduli</span>
                     </div>
+
+                    <div className="flex items-center space-x-4 text-sm font-semibold">
+                        <Link href={route('login')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
+                            Beranda
+                        </Link>
+                        <a href="#tentang" className="text-gray-600 hover:text-green-700 transition">Tentang</a>
+                        <a href="#donasi" className="text-gray-600 hover:text-green-700 transition">Donasi</a>
+
+                        {/* Logika Auth User Dashboard */}
+                        {auth?.user && (
+                            <Link
+                                href={route('dashboard')}
+                                className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50"
+                            >
+                                Dashboard
+                            </Link>
+                        )}
+                    </div>
+                </nav>
+
+                {/* --- Header Logo Area --- */}
+                <div className="text-center py-10 bg-white">
+                    <img
+                        src="/images/logo-minhaj.png"
+                        alt="Logo Pondok Pesantren Al-Minhaj"
+                        className="mx-auto w-24 h-24 object-contain mb-4"
+                    />
+                    <h1 className="text-2xl md:text-3xl font-bold text-green-800 uppercase tracking-wide leading-tight px-4">
+                        Pondok Pesantren<br />Al-Minhaj
+                    </h1>
                 </div>
 
-                <div className="mx-auto max-w-6xl px-6 py-10">
-                    {/* Logo and title */}
-                    <div className="flex flex-col items-center mb-8">
-                            <div className={`w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-md overflow-hidden border ${MINHAJ_BORDER_COLOR}`}>
-                            {/* local logo image */}
-                            <img src="/images/logo-minhaj.png" alt="Logo Minhaj" className="w-20 h-20 object-contain" />
-                        </div>
-                        <h1 className="mt-4 text-5xl font-serif font-bold text-green-800">Pondok Pesantren AL Minhaj</h1>
+                {/* --- Hero Section --- */}
+                <section className="grid md:grid-cols-2 bg-green-700 text-white">
+                    <div className="p-10 md:p-16 flex flex-col justify-center">
+                        <h2 className="text-3xl md:text-5xl font-bold mb-6 italic leading-tight">
+                            Membangun<br />Pesantren<br />Misbahul Minhaj
+                        </h2>
+                        <p className="text-green-100 text-sm md:text-base leading-relaxed opacity-90 mb-6">
+                            Bergabunglah dengan gerakan kebaikan untuk mendukung pembangunan dan pengembangan pesantren. Setiap donasi Anda adalah investasi untuk masa depan generasi Qur'ani yang mandiri dan berdaya.
+                        </p>
                     </div>
+                    <div className="grid grid-rows-2 h-80 md:h-auto">
+                        <img
+                            src="/images/pesantren1.png"
+                            alt="Konstruksi Atas"
+                            className="w-full h-full object-cover border-b-2 border-white/20"
+                        />
+                        <img
+                            src="/images/pesantren2.png"
+                            alt="Konstruksi Bawah"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                </section>
 
-                    {/* Hero */}
-                    <section className="grid lg:grid-cols-2 gap-6 items-stretch">
-                        <div className="rounded-lg bg-green-600 p-10 text-white shadow-lg flex flex-col justify-center">
-                            <h2 className="text-5xl font-extrabold leading-tight drop-shadow">Membangun<br/>pesantren<br/>misbahul minhaj</h2>
-                            <p className="mt-4 text-sm text-white">Bergabunglah dengan gerakan kebaikan untuk mendukung pembangunan dan pengembangan pesantren. Setiap donasi Anda adalah investasi untuk masa depan generasi Qur'ani yang mandiri dan berdaya.</p>
-                            <div className="mt-6">
-                                <Link href={('donasi')} className="inline-block">
-                                    <button type="button" className={`rounded-md ${MINHAJ_CTA_COLOR} px-6 py-2 shadow-sm font-medium hover:brightness-95 transition`}>Donasi Sekarang</button>
-                                </Link>
+                {/* --- Stats Section --- */}
+                <section className="py-10 px-4">
+                    <div className="flex justify-center mb-6 text-green-700 text-2xl gap-4 items-center opacity-70">
+                        <ArrowLeft size={24} />
+                        <span className="tracking-[0.5em] text-sm font-bold">• • •</span>
+                        <ArrowRight size={24} />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto text-center text-white">
+                        {statsData.map((item, idx) => (
+                            <div key={idx} className="bg-green-700 py-6 px-4 rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                                <div className="text-3xl font-bold mb-1">{item.val}</div>
+                                <div className="text-sm font-medium text-green-100">{item.label}</div>
                             </div>
-                        </div>
+                        ))}
+                    </div>
+                </section>
 
-                        <div className="space-y-4">
-                            <img src="/images/pesantren1.png" alt="konstruksi" className="w-full h-48 object-cover rounded-md shadow-md" />
-                            <img src="/images/pesantren2.png" alt="fondasi" className="w-full h-48 object-cover rounded-md shadow-md" />
-                        </div>
-                    </section>
-
-                    {/* About section */}
-                    <section className="mt-8 bg-green-100 rounded-lg p-6 shadow-inner">
-                        <div className="grid lg:grid-cols-2 gap-6 items-center">
-                            <div className="space-y-4">
-                                <img src="/images/pesantren1.png" alt="konstruksi" className="w-full h-40 object-cover rounded-md shadow" />
-                                {/* Perbaikan path image: hapus '/images/' ganda */}
-                                <img src="/images/pesantren2.png" alt="fondasi" className="w-full h-40 object-cover rounded-md shadow" />
-                            </div>
-
-                            <div className="rounded-lg bg-white p-6 border-4 border-green-800">
-                                <h3 className="text-2xl font-bold text-green-800 mb-2">Tentang minhaj peduli</h3>
-                                <p className="text-sm text-slate-700">Minhaj Peduli adalah sebuah inisiatif mulia yang berdedikasi untuk mendukung pembangunan dan pengembangan pesantren Al-Minhaj. Kami percaya bahwa pesantren adalah pilar penting dalam mencetak generasi Qur'ani yang tidak hanya unggul dalam ilmu agama, tetapi juga mandiri dan berdaya saing di era modern.</p>
-                                <p className="mt-3 text-sm text-slate-700">Melalui platform crowdfunding yang transparan dan akuntabel, kami mengajak Anda untuk menjadi bagian dari gerakan kebaikan ini. Setiap donasi yang Anda berikan akan langsung disalurkan untuk kebutuhan vital pesantren, mulai dari pembangunan fasilitas, pengadaan sarana belajar, hingga beasiswa bagi santri berprestasi.</p>
-                                <div className="mt-4">
-                                    <Link href="/donate" className="inline-block">
-                                        <button type="button" className={`rounded-md ${MINHAJ_CTA_COLOR} px-6 py-2 font-medium hover:brightness-95 transition`}>Donasi Sekarang</button>
-                                    </Link>
+                {/* --- Tujuan Program --- */}
+                <section className="py-10 px-4 max-w-5xl mx-auto" id="tentang">
+                    <h2 className="text-center text-2xl font-bold text-green-800 mb-8 uppercase tracking-wide">Tujuan Program</h2>
+                    <div className="space-y-4">
+                        {goalsData.map((item, idx) => (
+                            <div key={idx} className="rounded-xl overflow-hidden shadow-md group">
+                                <div className="bg-green-400 p-3 flex items-center group-hover:bg-green-500 transition">
+                                    <Check className="text-white mr-3 shrink-0" strokeWidth={3} size={20} />
+                                    <h3 className="font-bold text-white italic text-sm md:text-lg">{item.title}</h3>
+                                </div>
+                                <div className="bg-green-800 p-5 text-green-50 text-sm leading-relaxed">
+                                    {item.desc}
                                 </div>
                             </div>
-                        </div>
-                    </section>
-                </div>
+                        ))}
+                    </div>
+                </section>
 
-                {/* Footer contact - Sudah Full Width */}
-                <footer className={`${MINHAJ_PRIMARY} text-white mt-8 p-6`}>
-                    <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <div className="text-lg">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do</p>
-                        </div>
-                        <div className="text-right">
-                            <p className="font-medium">192849047012759</p>
-                            <p>minhaj@gmail.com</p>
-                            <p>Ciseeng, bogor, jawa barat</p>
+                {/* --- Site Plan --- */}
+                <section className="py-10 px-4 text-center">
+                    <h2 className="text-2xl font-bold text-green-800 mb-6 uppercase">
+                        Site Plan Pesantren Al-Minhaj
+                    </h2>
+                    <div className="max-w-4xl mx-auto bg-white p-2 rounded-lg shadow-lg border border-gray-200">
+                        <img
+                            src="/images/Site-plan.png"
+                            alt="Site Plan Pesantren Al-Minhaj"
+                            className="w-full h-auto rounded"
+                        />
+                    </div>
+                </section>
+
+                {/* --- Program Donasi --- */}
+                <section className="py-12 px-4 max-w-6xl mx-auto" id="donasi">
+                    <div className="text-center mb-10">
+                        <h2 className="text-3xl font-bold text-green-800 uppercase mb-2">Program Donasi</h2>
+                        <p className="font-medium text-gray-700">Yuk berpartisipasi dalam kebaikan !</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {programsData.map((prog, idx) => (
+                            <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg border border-green-100 hover:shadow-2xl transition duration-300 flex flex-col h-full">
+                                <img src={prog.img} alt={prog.title} className="w-full h-48 object-cover" />
+                                <div className="p-5 flex flex-col flex-grow justify-between">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-800 mb-3 font-serif">{prog.title}</h3>
+                                        <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                            <div
+                                                className="bg-green-500 h-3 rounded-full transition-all duration-1000"
+                                                style={{ width: `${prog.pct}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-end mt-2">
+                                        <div className="text-xs text-gray-600 space-y-1">
+                                            <p>Terkumpul: <span className="font-bold text-green-700">{prog.collected}</span></p>
+                                            <p>Target: {prog.target}</p>
+                                        </div>
+                                        <Link
+                                            href={auth?.user ? '/donasi/create' : route('login')}
+                                            className="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded shadow-md transform active:scale-95 transition"
+                                        >
+                                            Donasi Sekarang
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* --- Footer (Layout Updated: Logo Kiri, Info Kanan) --- */}
+                <footer className="w-full mt-10">
+                    <div className="bg-green-50 py-10 px-6 text-green-900">
+                        {/* Menggunakan Flexbox (justify-between) untuk memisahkan Kiri dan Kanan.
+                            md:flex-row akan membuat layout horizontal di layar besar.
+                        */}
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
+
+                            {/* --- BAGIAN KIRI: Branding --- */}
+                            <div className="flex flex-col justify-start md:w-1/3">
+                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">
+                                    MinhajPeduli
+                                </h2>
+                                <p className="text-lg font-medium text-green-800">
+                                    Pondok Pesantren AL-Minhaj
+                                </p>
+                            </div>
+
+                            {/* --- BAGIAN KANAN: Container untuk Alamat & Kontak --- */}
+                            {/* Mengelompokkan Alamat dan Kontak agar berada di sisi kanan */}
+                            <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
+
+                                {/* Kolom Alamat */}
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start">
+                                            <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" />
+                                            <span className="text-green-800 leading-relaxed">
+                                                Desa kuripan Kel.Kuripan<br />
+                                                Kec. Ciseeng, Bogor, Jawa Barat
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Kolom Kontak Kami */}
+                                <div>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Kontak kami</h3>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-center">
+                                            <Mail className="w-6 h-6 text-green-700 mr-3" />
+                                            <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">
+                                                AlMinhaj@gmail.com
+                                            </a>
+                                        </li>
+                                        <li className="flex items-center">
+                                            <Phone className="w-6 h-6 text-green-700 mr-3" />
+                                            <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">
+                                                081234567890
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            {/* --- Akhir Bagian Kanan --- */}
+
                         </div>
                     </div>
+
+                    {/* Copyright */}
+                    <div className="bg-white py-4 text-center border-t border-green-200">
+                        <p className="text-sm text-gray-700 font-medium flex items-center justify-center">
+                            <span className="text-lg mr-1">©</span>
+                            2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
+                        </p>
+                    </div>
                 </footer>
+
             </div>
         </>
     );
