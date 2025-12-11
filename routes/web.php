@@ -2,11 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+// PASTIKAN IMMPORT INI ADA:
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Admin\AdminController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes (USER / PUBLIK)
 |--------------------------------------------------------------------------
+| Bagian ini sudah OK, berfungsi untuk publik dan Donasi.
 */
 
 // Halaman Beranda
@@ -57,47 +61,45 @@ Route::get('/donasi/{id}/konfirmasi', function ($id) {
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (DASHBOARD ADMIN)
+| Admin Routes (OTENTIKASI & DASHBOARD ADMIN)
 |--------------------------------------------------------------------------
+| Bagian ini telah diubah total untuk mengimplementasikan otentikasi Admin.
 */
 
+// --- 1. RUTE OTENTIKASI ADMIN (TANPA MIDDLEWARE 'auth') ---
 Route::prefix('admin')->group(function () {
+    // Tampilkan halaman Login Admin (Blade View: auth/admin_login.blade.php)
+    Route::get('/login', [AuthenticatedSessionController::class, 'createAdmin'])
+        ->name('admin.login');
 
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return Inertia::render('Admin/Dashboard');
-    })->name('admin.dashboard');
+    // Proses Login Admin (POST)
+    Route::post('/login', [AuthenticatedSessionController::class, 'storeAdmin'])
+        ->name('admin.login.post');
+
+    // Proses Logout Admin (POST)
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroyAdmin'])
+        ->name('admin.logout');
+});
+
+
+// --- 2. RUTE DASHBOARD & PAGES ADMIN (DIBATASI OLEH MIDDLEWARE 'auth:admin') ---
+// Middleware 'auth:admin' memastikan hanya Admin yang sudah login yang bisa mengakses
+Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard (Memanggil Controller untuk Inertia Render)
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
     // Donasi Masuk
-    Route::get('/donations', function () {
-        return Inertia::render('Admin/Donations');
-    })->name('admin.donations');
+    Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
 
     // Kelola Program
-    Route::get('/programs', function () {
-        return Inertia::render('Admin/Programs'); // Pastikan file Program.jsx ada/sesuai
-    })->name('admin.programs');
+    Route::get('/programs', [AdminController::class, 'programs'])->name('programs');
 
-    // Data Donatur (INI YANG MENYEBABKAN ERROR)
-    // Pastikan ->name('admin.donatur') sesuai dengan yang dipanggil di Layout
-    Route::get('/donatur', function () {
-        return Inertia::render('Admin/Donatur');
-    })->name('admin.donatur');  // <--- SEBELUMNYA MUNGKIN 'admin.donors'
+    // Data Donatur
+    Route::get('/donatur', [AdminController::class, 'donatur'])->name('donatur');
 
-    // Settings (Placeholder)
-    Route::get('/settings', function () {
-        return Inertia::render('Admin/Dashboard');
-    })->name('admin.settings');
-
-    // Kelola Program (Pastikan render 'Admin/Program') -> Nama file tunggal
-    Route::get('/programs', function () {
-        return Inertia::render('Admin/Program');
-    })->name('admin.programs');
-
-    // Settings (Pastikan render 'Admin/Settings')
-    Route::get('/settings', function () {
-        return Inertia::render('Admin/Settings');
-    })->name('admin.settings');
+    // Settings
+    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
 
 require __DIR__.'/auth.php';
