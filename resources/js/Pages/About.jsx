@@ -131,46 +131,42 @@ export default function About({ auth }) {
                     </div>
                 </section>
 
-                {/* --- Tujuan Diagram Section --- */}
-                <section className="bg-green-100 py-16 px-6 relative overflow-hidden">
-                    <div className="max-w-4xl mx-auto text-center relative z-10">
-                        <h2 className="text-2xl font-bold text-green-800 uppercase mb-12 underline decoration-green-500 decoration-4 underline-offset-8">
-                            TUJUAN
-                        </h2>
+{/* --- Tujuan Diagram Section --- */}
+<section className="bg-green-100 py-16 px-6 relative overflow-hidden">
+    <div className="max-w-4xl mx-auto text-center relative z-10">
+        <h2 className="text-2xl font-bold text-green-800 uppercase mb-12 underline decoration-green-500 decoration-4 underline-offset-8">
+            TUJUAN
+        </h2>
 
-                        {/* Layout Diagram */}
-                        <div className="flex flex-col items-center">
-                            {/* Baris Atas (2 Kotak) */}
-                            <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16">
-                                {/* Kotak Kiri */}
-                                <div className="bg-green-200 border-2 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
-                                    <p className="text-green-900 font-semibold text-sm">
-                                        Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
-                                    </p>
-                                </div>
+        {/* Layout Diagram (Tanpa Garis) */}
+        <div className="flex flex-col items-center relative">
 
-                                {/* Kotak Kanan (Kosong di gambar referensi, tapi disiapkan strukturnya) */}
-                                <div className="bg-green-200 border-2 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
-                                    <p className="text-green-900 font-semibold text-sm opacity-50">
-                                        (Area Kosong / Tambahan Tujuan)
-                                    </p>
-                                </div>
-                            </div>
+            {/* Baris Atas (2 Kotak) */}
+            <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16 relative z-10">
+                {/* Kotak Kiri */}
+                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                    <p className="text-green-900 font-bold text-sm">
+                        Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
+                    </p>
+                </div>
 
-                            {/* Garis Penghubung (Visual CSS) */}
-                            {/* Ini trik sederhana menggunakan border untuk membuat garis V */}
-                            <div className="hidden md:block absolute top-[16rem] w-[50%] h-16 border-l-2 border-r-2 border-b-2 border-green-800 rounded-b-full pointer-events-none opacity-50"></div>
+                {/* Kotak Kanan */}
+                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                    <p className="text-green-900 font-bold text-sm">
+                        Al-Minhaj berkomitmen mencetak hafizh dan hafizhah yang berakhlak mulia dan bermanfaat bagi umat.
+                    </p>
+                </div>
+            </div>
 
-                            {/* Baris Bawah (1 Kotak Tengah) */}
-                            <div className="bg-green-200 border-2 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4">
-                                <div className="absolute -top-6 text-green-800 md:hidden">↓</div> {/* Panah hp */}
-                                <p className="text-green-900 font-semibold text-sm">
-                                    Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            {/* Baris Bawah (1 Kotak Tengah) */}
+            <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4 z-10">
+                <p className="text-green-900 font-bold text-sm">
+                    Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
 
                 {/* --- Ketua Yayasan Section --- */}
                 <section className="bg-green-700 py-16 px-6 text-white mt-10">

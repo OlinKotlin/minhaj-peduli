@@ -46,7 +46,8 @@ export default function Welcome({ auth }) {
                     </div>
 
                     <div className="flex items-center space-x-4 text-sm font-semibold">
-                        <Link href={route('login')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
+                        {/* PERBAIKAN 1: Href Beranda jadi "/" bukan route('login') */}
+                        <Link href="/" className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
                             Beranda
                         </Link>
 
@@ -54,15 +55,14 @@ export default function Welcome({ auth }) {
                             Tentang
                         </Link>
 
-                        {/* UPDATE: Link Donasi sekarang mengarah ke route('donasi') */}
                         <Link href={route('donasi')} className="text-gray-600 hover:text-green-700 transition">
                             Donasi
                         </Link>
 
-                        {/* Logika Auth User Dashboard */}
+                        {/* Link ke Dashboard Admin (Jika user terdeteksi) */}
                         {auth?.user && (
                             <Link
-                                href={route('dashboard')}
+                                href={route('admin.dashboard')} // Pastikan route ini ada di web.php
                                 className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50"
                             >
                                 Dashboard
@@ -83,27 +83,28 @@ export default function Welcome({ auth }) {
                     </h1>
                 </div>
 
-                {/* --- Hero Section --- */}
-                <section className="grid md:grid-cols-2 bg-green-700 text-white">
-                    <div className="p-10 md:p-16 flex flex-col justify-center">
-                        <h2 className="text-3xl md:text-5xl font-bold mb-6 italic leading-tight">
-                            Membangun<br />Pesantren<br />Misbahul Minhaj
-                        </h2>
-                        <p className="text-green-100 text-sm md:text-base leading-relaxed opacity-90 mb-6">
-                            Bergabunglah dengan gerakan kebaikan untuk mendukung pembangunan dan pengembangan pesantren. Setiap donasi Anda adalah investasi untuk masa depan generasi Qur'ani yang mandiri dan berdaya.
-                        </p>
-                    </div>
-                    <div className="grid grid-rows-2 h-80 md:h-auto">
-                        <img
-                            src="/images/pesantren1.png"
-                            alt="Konstruksi Atas"
-                            className="w-full h-full object-cover border-b-2 border-white/20"
-                        />
-                        <img
-                            src="/images/pesantren2.png"
-                            alt="Konstruksi Bawah"
-                            className="w-full h-full object-cover"
-                        />
+                {/* --- Hero Section (Sesuai Desain Terakhir) --- */}
+                <section className="w-full">
+                    <div className="grid md:grid-cols-2">
+                        {/* Kolom Kiri */}
+                        <div className="bg-[#439c63] text-white p-10 md:p-16 flex flex-col justify-center">
+                            <h2 className="text-3xl md:text-5xl font-bold mb-6 italic leading-tight tracking-wide">
+                                Membangun<br />
+                                Pesantren<br />
+                                Misbahul Minhaj
+                            </h2>
+                            <p className="text-white/90 text-sm md:text-lg leading-relaxed font-normal">
+                                Bergabunglah dengan gerakan kebaikan untuk mendukung pembangunan dan pengembangan pesantren. Setiap donasi Anda adalah investasi untuk masa depan generasi Qur'ani yang mandiri dan berdaya.
+                            </p>
+                        </div>
+                        {/* Kolom Kanan */}
+                        <div className="relative h-64 md:h-auto w-full">
+                            <img
+                                src="/images/pesantren1.png"
+                                alt="Pembangunan Pesantren"
+                                className="absolute inset-0 w-full h-full object-cover"
+                            />
+                        </div>
                     </div>
                 </section>
 
@@ -182,7 +183,7 @@ export default function Welcome({ auth }) {
                                             <p>Terkumpul: <span className="font-bold text-green-700">{prog.collected}</span></p>
                                             <p>Target: {prog.target}</p>
                                         </div>
-                                        {/* Link Donasi di Kartu Program */}
+                                        {/* PERBAIKAN 2: Langsung ke donasi, hapus logika login sementara */}
                                         <Link
                                             href={route('donasi')}
                                             className="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded shadow-md transform active:scale-95 transition"
@@ -196,66 +197,45 @@ export default function Welcome({ auth }) {
                     </div>
                 </section>
 
-                {/* --- Footer (Layout Updated: Logo Kiri, Info Kanan) --- */}
+                {/* --- Footer --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
-
-                            {/* --- BAGIAN KIRI: Branding --- */}
                             <div className="flex flex-col justify-start md:w-1/3">
-                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">
-                                    MinhajPeduli
-                                </h2>
-                                <p className="text-lg font-medium text-green-800">
-                                    Pondok Pesantren AL-Minhaj
-                                </p>
+                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">MinhajPeduli</h2>
+                                <p className="text-lg font-medium text-green-800">Pondok Pesantren AL-Minhaj</p>
                             </div>
-
-                            {/* --- BAGIAN KANAN: Container untuk Alamat & Kontak --- */}
                             <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
-
-                                {/* Kolom Alamat */}
                                 <div>
                                     <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-start">
                                             <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" />
                                             <span className="text-green-800 leading-relaxed">
-                                                Desa kuripan Kel.Kuripan<br />
-                                                Kec. Ciseeng, Bogor, Jawa Barat
+                                                Desa kuripan Kel.Kuripan<br />Kec. Ciseeng, Bogor, Jawa Barat
                                             </span>
                                         </li>
                                     </ul>
                                 </div>
-
-                                {/* Kolom Kontak Kami */}
                                 <div>
                                     <h3 className="text-xl font-bold mb-4 text-green-900">Kontak kami</h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-center">
                                             <Mail className="w-6 h-6 text-green-700 mr-3" />
-                                            <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">
-                                                AlMinhaj@gmail.com
-                                            </a>
+                                            <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a>
                                         </li>
                                         <li className="flex items-center">
                                             <Phone className="w-6 h-6 text-green-700 mr-3" />
-                                            <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">
-                                                081234567890
-                                            </a>
+                                            <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">081234567890</a>
                                         </li>
                                     </ul>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-
-                    {/* Copyright */}
                     <div className="bg-white py-4 text-center border-t border-green-200">
                         <p className="text-sm text-gray-700 font-medium flex items-center justify-center">
-                            <span className="text-lg mr-1">©</span>
-                            2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
+                            <span className="text-lg mr-1">©</span> 2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
                         </p>
                     </div>
                 </footer>
