@@ -103,3 +103,27 @@ Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->
 });
 
 require __DIR__.'/auth.php';
+
+
+// Route Login
+Route::get('/login', function () {
+    return Inertia::render('Auth/Login');
+})->name('login');
+
+// Route Register (BARU)
+Route::get('/register', function () {
+    return Inertia::render('Auth/Register');
+})->name('register');
+
+// Route Halaman Lupa Password
+Route::get('/forgot-password', function () {
+    return Inertia::render('Auth/ForgotPassword', [
+        'status' => session('status'),
+    ]);
+})->name('password.request');
+
+// Route untuk menampilkan halaman Dashboard
+Route::get('/admin/dashboard', function () {
+    // Pastikan path 'Admin/Dashboard' sesuai dengan lokasi file Dashboard.jsx kamu
+    return Inertia::render('Admin/Dashboard');
+})->name('admin.dashboard');
