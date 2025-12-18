@@ -2,20 +2,61 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-// PASTIKAN IMMPORT INI ADA:
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\DonationController;
+use App\Models\Program;
+use App\Models\Donation;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes (USER / PUBLIK)
 |--------------------------------------------------------------------------
-| Bagian ini sudah OK, berfungsi untuk publik dan Donasi.
 */
 
-// Halaman Beranda
+// Halaman Beranda (Welcome)
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    $programs = Program::with('donations')
+        ->orderBy('id', 'asc')
+        ->limit(4)
+        ->get()
+        ->map(function ($program) {
+            // Menggunakan status='paid' dan kolom 'nominal' untuk konsistensi
+            $collected_amount = $program->donations->where('status', 'paid')->sum('nominal');
+            $target_amount = $program->target_amount;
+
+            $percentage = 0;
+            if ($target_amount > 0) {
+                $percentage = min(100, round(($collected_amount / $target_amount) * 100));
+            }
+
+            return [
+                'id' => $program->id,
+                'title' => $program->title,
+                'target_amount' => $target_amount,
+                'collected_amount' => $collected_amount,
+                'percentage' => $percentage,
+                'image_path' => $program->image_path ?? '/images/default.png',
+            ];
+        });
+
+    $totalCollectedAmount = Donation::where('status', 'paid')->sum('nominal');
+    // Menggunakan kolom 'name' atau 'email' yang pasti ada
+    $totalDonaturCount = Donation::where('status', 'paid')->distinct('name')->count();
+    $totalProgramCount = Program::count();
+
+    $totalStats = [
+        'program_count' => $totalProgramCount,
+        'collected_amount' => $totalCollectedAmount,
+        'total_donatur' => $totalDonaturCount,
+    ];
+
+    return Inertia::render('Welcome', [
+        'programsData' => $programs,
+        'totalStats' => $totalStats,
+        'auth' => Auth::user() ? ['user' => Auth::user()] : null,
+    ]);
 })->name('welcome');
 
 // Halaman Tentang
@@ -23,34 +64,25 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-// Halaman List Donasi
-Route::get('/donasi', function () {
-    return Inertia::render('Donasi');
-})->name('donasi');
+// Halaman List Donasi (INDEX) - Menggunakan Controller
+Route::get('/donasi', [DonationController::class, 'index'])->name('donasi');
 
-// Halaman Detail Donasi
-Route::get('/donasi/{id}', function ($id) {
-    return Inertia::render('DetailDonasi', ['id' => $id]);
-})->name('donasi.detail');
+// =========================================================================
+// RUTE TRANSAKSI DONASI
+// =========================================================================
 
-// Halaman Form Donasi
-Route::get('/donasi/{id}/form', function ($id) {
-    $nominal = request()->query('nominal', 0);
-    return Inertia::render('FormDonasi', [
-        'id' => $id,
-        'nominal' => $nominal
-    ]);
+// RUTE FORM DONASI
+Route::get('/donasi/form/{id}/{nominal}', function ($id, $nominal) {
+    return inertia('FormDonasi', ['id' => $id, 'nominal' => $nominal]);
 })->name('donasi.form');
 
-// Halaman Pembayaran Donasi
-Route::get('/donasi/{id}/pembayaran', function ($id) {
-    return Inertia::render('PembayaranDonasi', [
-        'id' => $id,
-        'data' => request()->all()
-    ]);
-})->name('donasi.pembayaran');
+// 1. Rute POST untuk MENYIMPAN data donatur (Memanggil storeDonation)
+Route::post('/donasi/{id}/store', [DonationController::class, 'storeDonation'])->name('donasi.store');
 
-// Halaman Konfirmasi Pembayaran
+// 2. Rute GET untuk menampilkan halaman Pembayaran (Memanggil paymentForm)
+Route::get('/donasi/{id}/pembayaran', [DonationController::class, 'paymentForm'])->name('donasi.pembayaran');
+
+// RUTE KONFIRMASI PEMBAYARAN
 Route::get('/donasi/{id}/konfirmasi', function ($id) {
     return Inertia::render('KonfirmasiPembayaran', [
         'id' => $id,
@@ -59,46 +91,30 @@ Route::get('/donasi/{id}/konfirmasi', function ($id) {
 })->name('donasi.konfirmasi');
 
 
+// Rute Detail Donasi (SHOW)
+Route::get('/donasi/{id}', [DonationController::class, 'show'])->name('donasi.show');
+
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes (OTENTIKASI & DASHBOARD ADMIN)
 |--------------------------------------------------------------------------
-| Bagian ini telah diubah total untuk mengimplementasikan otentikasi Admin.
 */
 
-// --- 1. RUTE OTENTIKASI ADMIN (TANPA MIDDLEWARE 'auth') ---
 Route::prefix('admin')->group(function () {
-    // Tampilkan halaman Login Admin (Blade View: auth/admin_login.blade.php)
     Route::get('/login', [AuthenticatedSessionController::class, 'createAdmin'])
         ->name('admin.login');
-
-    // Proses Login Admin (POST)
     Route::post('/login', [AuthenticatedSessionController::class, 'storeAdmin'])
         ->name('admin.login.post');
-
-    // Proses Logout Admin (POST)
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroyAdmin'])
         ->name('admin.logout');
 });
 
-
-// --- 2. RUTE DASHBOARD & PAGES ADMIN (DIBATASI OLEH MIDDLEWARE 'auth:admin') ---
-// Middleware 'auth:admin' memastikan hanya Admin yang sudah login yang bisa mengakses
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->group(function () {
-
-    // Dashboard (Memanggil Controller untuk Inertia Render)
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
-    // Donasi Masuk
     Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
-
-    // Kelola Program
     Route::get('/programs', [AdminController::class, 'programs'])->name('programs');
-
-    // Data Donatur
     Route::get('/donatur', [AdminController::class, 'donatur'])->name('donatur');
-
-    // Settings
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
 
@@ -110,7 +126,7 @@ Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->name('login');
 
-// Route Register (BARU)
+// Route Register
 Route::get('/register', function () {
     return Inertia::render('Auth/Register');
 })->name('register');
@@ -122,8 +138,4 @@ Route::get('/forgot-password', function () {
     ]);
 })->name('password.request');
 
-// Route untuk menampilkan halaman Dashboard
-Route::get('/admin/dashboard', function () {
-    // Pastikan path 'Admin/Dashboard' sesuai dengan lokasi file Dashboard.jsx kamu
-    return Inertia::render('Admin/Dashboard');
-})->name('admin.dashboard');
+

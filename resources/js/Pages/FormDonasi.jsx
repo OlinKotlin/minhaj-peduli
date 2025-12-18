@@ -1,13 +1,13 @@
-import { Head, Link, router } from '@inertiajs/react'; // Tambahkan router
+import { Head, Link, router } from '@inertiajs/react';
 import { MapPin, Phone, Mail, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-export default function FormDonasi({ auth, id, nominal }) {
+function FormDonasi({ auth, id, nominal, errors }) { // Tambahkan 'errors' untuk menangani validasi
     // --- STATE DATA FORM ---
     const [formData, setFormData] = useState({
         sapaan: 'Bapak',
-        name: '',
-        email: '',
+        name: auth.user?.name || '',
+        email: auth.user?.email || '',
         phone: '',
         notes: '',
         isAnonymous: false,
@@ -21,31 +21,52 @@ export default function FormDonasi({ auth, id, nominal }) {
         }));
     };
 
+    // FUNGSI INI DIUBAH DARI router.get MENJADI router.post
     const handlePayment = () => {
-        // Validasi Sederhana
-        if (!formData.name || !formData.email || !formData.phone) {
-            alert("Mohon lengkapi Nama, Email, dan Nomor Telepon.");
+        // Validasi Sederhana di Frontend
+        if ((!formData.name && !formData.isAnonymous) || !formData.email || !formData.phone) {
+            alert("Mohon lengkapi Nama (atau centang Hamba Allah), Email, dan Nomor Telepon.");
             return;
         }
 
-        // Navigasi ke Halaman Pembayaran dengan membawa data
-        router.get(route('donasi.pembayaran', { id: id }), {
+        // 1. Siapkan data yang akan dikirim (sesuai kebutuhan Controller)
+        const dataKirim = {
             nominal: nominal,
+            // Jika anonim, kirim nama "Hamba Allah"
             name: formData.isAnonymous ? "Hamba Allah" : formData.name,
             email: formData.email,
             phone: formData.phone,
             notes: formData.notes
+        };
+
+        // 2. Gunakan router.post ke route donasi.store
+        // Route ini akan memanggil Controller untuk menyimpan data dan melakukan redirect
+        router.post(route('donasi.store', { id: id }), dataKirim, {
+            // Optional: Tambahkan logika error handling di sini
+            onError: (errors) => {
+                console.error('Validasi Gagal atau Error Server:', errors);
+                // Anda dapat menggunakan prop 'errors' untuk menampilkan pesan di samping input
+            },
         });
     };
 
-    // ... (Mock Data Program sama) ...
+    // Mock Data Program (Seharusnya dikirim dari Controller)
     const allPrograms = [
         { id: 1, title: "Pembangunan Asrama Santri", img: "/images/pesantren1.png" },
         { id: 2, title: "Pembangunan Pesantren Tahfidz", img: "/images/pesantren2.png" },
         { id: 3, title: "Wakaf Al-quran dan Buku", img: "/images/pesantren1.png" },
         { id: 4, title: "Pembangunan Masjid", img: "/images/pesantren2.png" },
     ];
-    const program = allPrograms.find(p => p.id === Number(id)) || allPrograms[0];
+
+    const program = allPrograms.find(p => p.id === Number(id));
+
+    if (!program) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-red-100">
+                <p className="text-red-700 font-bold">Error: Program dengan ID {id} tidak ditemukan!</p>
+            </div>
+        );
+    }
 
     const formatRupiah = (number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -66,7 +87,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                         Minhaj<span className="text-green-900">Peduli</span>
                     </div>
                     <div className="flex items-center space-x-4 text-sm font-semibold">
-                        <Link href={route('donasi.detail', { id: id })} className="text-gray-600 hover:text-green-700">
+                        <Link href={route('donasi.show', { id: id })} className="text-gray-600 hover:text-green-700">
                             Kembali
                         </Link>
                     </div>
@@ -74,9 +95,9 @@ export default function FormDonasi({ auth, id, nominal }) {
 
                 <div className="max-w-5xl mx-auto px-6 py-10">
 
-                    {/* --- Stepper (Sama) --- */}
+                    {/* --- Stepper (Tidak Berubah) --- */}
                     <div className="flex justify-center items-center mb-12">
-                         {/* Step 1: Active */}
+                        {/* Step 1: Active */}
                         <div className="flex flex-col items-center relative z-10">
                             <div className="text-sm font-bold text-gray-700 mb-2">Formulir Donasi</div>
                             <div className="w-10 h-10 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold shadow-md ring-4 ring-green-100">1</div>
@@ -125,6 +146,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                                         value={formData.name} onChange={handleInputChange}
                                         className="block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-green-500"
                                     />
+                                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                                 </div>
                             </div>
 
@@ -136,6 +158,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                                     value={formData.email} onChange={handleInputChange}
                                     className="block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-green-500"
                                 />
+                                {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                             </div>
 
                             <div>
@@ -146,6 +169,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                                     value={formData.phone} onChange={handleInputChange}
                                     className="block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-green-500"
                                 />
+                                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                             </div>
 
                             <div>
@@ -155,6 +179,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                                     value={formData.notes} onChange={handleInputChange}
                                     className="block w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-green-500"
                                 ></textarea>
+                                {errors.notes && <p className="text-red-500 text-xs mt-1">{errors.notes}</p>}
                             </div>
 
                             <div className="flex items-center">
@@ -204,7 +229,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                                 </div>
                             </div>
 
-                            {/* Tombol Lanjut (UPDATE onClick) */}
+                            {/* Tombol Lanjut (Memanggil fungsi handlePayment yang telah diubah) */}
                             <button
                                 onClick={handlePayment}
                                 className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-full shadow-lg transition"
@@ -215,7 +240,7 @@ export default function FormDonasi({ auth, id, nominal }) {
                     </div>
                 </div>
 
-                {/* --- Footer (Sama dengan PembayaranDonasi) --- */}
+                {/* --- Footer (Tidak Berubah) --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
@@ -262,3 +287,5 @@ export default function FormDonasi({ auth, id, nominal }) {
         </>
     );
 }
+
+export default FormDonasi;

@@ -1,59 +1,50 @@
-import { Head, Link } from '@inertiajs/react';
+// resources/js/Pages/DetailDonasi.jsx
+
+import { Head, Link, router } from '@inertiajs/react'; // Import 'router' dari Inertia
 import { MapPin, Phone, Mail, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 
-export default function DetailDonasi({ auth, id }) {
+// Fungsi helper untuk memformat angka menjadi Rupiah (Rp X.XXX.XXX)
+const formatRupiah = (number) => {
+    // Pastikan number adalah angka sebelum diformat
+    const num = Number(number);
+    if (isNaN(num)) return "Rp 0";
+
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(num);
+};
+
+
+// Menerima 'program' sebagai props dari Laravel, BUKAN 'id'
+export default function DetailDonasi({ auth, program }) {
     // State untuk menangkap input nominal donasi
     const [nominal, setNominal] = useState('');
 
-    // Mock Data Program (Sama dengan halaman Donasi untuk konsistensi data)
-    const allPrograms = [
-        {
-            id: 1,
-            title: "Pembangunan Asrama Santri",
-            desc_short: "Bantu wujudkan tempat tinggal yang nyaman bagi para penjaga Al-Qur'an masa depan.",
-            desc_long: `Kami sampaikan kabar gembira dan ajakan mulia. Pesantren Misbahul Minhaj akan segera didirikan di lokasi strategis: Ciseeng, Kabupaten Bogor, Jawa Barat. Visi kami jelas: mencetak generasi ulama dan pemimpin yang berlandaskan Al-Qur'an dan Sunnah, menjadi pusat pendidikan Islam terdepan di Bogor Barat.
+    // Fungsi untuk menangani klik tombol "Donasi Sekarang"
+    const handleDonationClick = () => {
+        const nominalValue = Number(nominal);
 
-Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama dan kelas) belum ada sama sekali. Kami mengajak Anda untuk menanam Batu Pertama bagi pembangunan Asrama Santri dan Gedung Kelas. Donasi Anda bukan hanya membantu pembangunan, tetapi menjadikan Anda pendiri sekaligus saksi berdirinya sebuah institusi pendidikan Islam dari nol di Ciseeng. Inilah kesempatan emas amal jariyah untuk mendirikan Rumah Ilmu di Bogor.`,
-            current: "Rp 12.765.512",
-            target: "Rp 100.000.000",
-            pct: 10,
-            img: "/images/pesantren1.png"
-        },
-        {
-            id: 2,
-            title: "Pembangunan Pesantren Tahfidz",
-            desc_short: "Membangun fasilitas penghafal Quran yang memadai.",
-            desc_long: "Program ini bertujuan membangun ruang kelas khusus tahfidz agar para santri dapat menghafal dengan tenang dan fokus. Fasilitas yang baik akan menunjang kualitas hafalan mereka.",
-            current: "Rp 8.450.000",
-            target: "Rp 10.000.000",
-            pct: 84,
-            img: "/images/pesantren2.png"
-        },
-        {
-            id: 3,
-            title: "Wakaf Al-quran dan Buku",
-            desc_short: "Penyediaan literasi islam untuk santri.",
-            desc_long: "Wakaf buku dan Al-Quran untuk perpustakaan santri. Kami membutuhkan ribuan eksemplar Al-Quran dan kitab-kitab kuning untuk menunjang kegiatan belajar mengajar sehari-hari.",
-            current: "Rp 6.380.000",
-            target: "Rp 10.000.000",
-            pct: 68,
-            img: "/images/pesantren1.png"
-        },
-        {
-            id: 4,
-            title: "Pembangunan Masjid",
-            desc_short: "Tempat ibadah utama bagi para santri dan warga sekitar.",
-            desc_long: "Pembangunan masjid utama pesantren yang akan menjadi pusat kegiatan ibadah santri dan masyarakat sekitar. Masjid ini didesain untuk menampung hingga 500 jamaah.",
-            current: "Rp 8.483.890",
-            target: "Rp 10.000.000",
-            pct: 84,
-            img: "/images/pesantren2.png"
-        },
-    ];
+        // 1. Validasi Input Nominal
+        if (!nominalValue || nominalValue < 10000 || isNaN(nominalValue)) {
+            // Tampilkan peringatan jika nominal kosong, nol, atau kurang dari 10000
+            alert("Mohon masukkan nominal donasi minimal Rp 10.000 untuk melanjutkan.");
+            return;
+        }
 
-    // Cari program berdasarkan ID (pastikan tipe data id sesuai)
-    const program = allPrograms.find(p => p.id === Number(id)) || allPrograms[0];
+        // 2. Lanjutkan ke halaman form donasi jika valid
+        router.visit(route('donasi.form', {
+            id: program.id,
+            nominal: nominalValue
+        }));
+    };
+
+    // Data yang siap ditampilkan (menggunakan data dinamis dari props)
+    const collected = formatRupiah(program.collected_amount); // Diambil dari accessor Laravel
+    const target = formatRupiah(program.target_amount);      // Diambil dari Model Program
+    const percentage = program.percentage;                    // Diambil dari accessor Laravel
 
     return (
         <>
@@ -61,7 +52,7 @@ Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama
 
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* --- Navbar --- */}
+                {/* --- Navbar (Tidak Berubah) --- */}
                 <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
                     <div className="text-2xl font-bold text-green-700 italic">
                         Minhaj<span className="text-green-900">Peduli</span>
@@ -96,7 +87,7 @@ Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama
                             {/* Gambar Utama */}
                             <div className="rounded-3xl overflow-hidden shadow-lg mb-8 h-80 md:h-[400px]">
                                 <img
-                                    src={program.img}
+                                    src={program.image_path} // PENGGUNAAN KEY DINAMIS DARI DB
                                     alt={program.title}
                                     className="w-full h-full object-cover transform hover:scale-105 transition duration-500"
                                 />
@@ -116,6 +107,7 @@ Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama
                             <div className="bg-white/50 p-6 rounded-2xl border border-green-100">
                                 <h2 className="text-xl font-bold text-green-800 mb-4 border-l-4 border-green-500 pl-3">
                                     Detail Program
+
                                 </h2>
                                 <div className="text-gray-800 space-y-4 leading-relaxed text-justify whitespace-pre-line">
                                     {program.desc_long}
@@ -126,43 +118,38 @@ Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama
                         {/* --- Kanan: Card Donasi --- */}
                         <div className="lg:col-span-1 sticky top-24">
                             <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 text-center relative overflow-hidden">
-                                {/* Hiasan Background Card */}
+
                                 <div className="absolute top-0 left-0 w-full h-2 bg-green-500"></div>
 
-                                {/* Circular Progress Bar */}
+                                {/* Circular Progress Bar - MENGGUNAKAN DATA DINAMIS */}
                                 <div className="relative w-40 h-40 mx-auto mb-6 mt-4">
                                     <svg className="w-full h-full transform -rotate-90">
                                         <circle
-                                            cx="80"
-                                            cy="80"
-                                            r="70"
-                                            stroke="#e5e7eb"
-                                            strokeWidth="10"
-                                            fill="transparent"
+                                            cx="80" cy="80" r="70"
+                                            stroke="#e5e7eb" strokeWidth="10" fill="transparent"
                                         />
                                         <circle
-                                            cx="80"
-                                            cy="80"
-                                            r="70"
+                                            cx="80" cy="80" r="70"
                                             stroke="#16a34a" // green-600
                                             strokeWidth="10"
                                             fill="transparent"
-                                            strokeDasharray={440} // Keliling lingkaran approx 2*PI*r (2 * 3.14 * 70)
-                                            strokeDashoffset={440 - (440 * program.pct) / 100}
+                                            strokeDasharray={440}
+                                            // PENGGUNAAN VARIABEL DINAMIS 'percentage'
+                                            strokeDashoffset={440 - (440 * percentage) / 100}
                                             strokeLinecap="round"
                                             className="transition-all duration-1000 ease-out"
                                         />
                                     </svg>
                                     <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-3xl font-bold text-blue-800">{program.pct}%</span>
+                                        <span className="text-3xl font-bold text-blue-800">{percentage}%</span>
                                     </div>
                                 </div>
 
-                                {/* Text Stats */}
+                                {/* Text Stats - MENGGUNAKAN DATA DINAMIS */}
                                 <div className="mb-6">
                                     <p className="text-gray-600 text-sm font-medium">Donasi Terkumpul:</p>
-                                    <p className="text-2xl font-bold text-green-700">{program.current}</p>
-                                    <p className="text-xs text-gray-500 mt-1">dari target donasi {program.target}</p>
+                                    <p className="text-2xl font-bold text-green-700">{collected}</p>
+                                    <p className="text-xs text-gray-500 mt-1">dari target donasi {target}</p>
                                 </div>
 
                                 {/* Input Nominal */}
@@ -182,16 +169,13 @@ Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama
                                     <p className="text-[10px] text-gray-400 mt-1 ml-2 italic">*Minimal donasi Rp 10.000</p>
                                 </div>
 
-                                {/* Button Action: Link ke Form Donasi */}
-                                <Link
-                                    href={route('donasi.form', {
-                                        id: program.id,
-                                        nominal: nominal || 0 // Kirim nominal ke route (default 0 jika kosong)
-                                    })}
+                                {/* Button Action: Menggunakan BUTTON dengan onClick Handler */}
+                                <button
+                                    onClick={handleDonationClick} // Panggil fungsi validasi
                                     className="block w-full bg-[#16a34a] hover:bg-green-700 text-white text-lg font-bold py-3 px-4 rounded-full shadow-lg transform active:scale-95 transition duration-200"
                                 >
                                     Donasi Sekarang
-                                </Link>
+                                </button>
 
                             </div>
                         </div>
@@ -199,7 +183,7 @@ Saat ini, kami telah memiliki tanah wakaf, namun bangunan utama (termasuk asrama
                     </div>
                 </div>
 
-                {/* --- Footer (Konsisten dengan halaman lain) --- */}
+                {/* --- Footer (Tidak Berubah) --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">

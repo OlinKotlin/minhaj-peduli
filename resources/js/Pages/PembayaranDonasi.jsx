@@ -1,11 +1,15 @@
-import { Head, Link, router } from '@inertiajs/react'; // Pastikan import router ada
+import { Head, Link, router } from '@inertiajs/react';
 import { MapPin, Phone, Mail } from 'lucide-react';
 
-export default function PembayaranDonasi({ auth, id, data }) {
-    // Data dummy program
-    const programTitle = "Pembangunan Asrama Santri";
+export default function PembayaranDonasi({ auth, id, donationData }) {
+    // Pastikan props diterima dengan benar
+    const data = donationData || {};
 
-    // Simulasi data dari Form (fallback jika kosong)
+    // Data program (masih simulasi)
+    const programTitle = "Pembangunan Asrama Santri";
+    const programId = Number(id);
+
+    // Data Donatur dari Controller
     const donatur = {
         name: data.name || "Hamba Allah",
         email: data.email || "email@example.com",
@@ -13,25 +17,59 @@ export default function PembayaranDonasi({ auth, id, data }) {
         nominal: Number(data.nominal) || 0
     };
 
-    const uniqueCode = 2;
-    const totalTransfer = donatur.nominal + uniqueCode;
-    const invoiceNo = "MM2025120607634";
+    const invoiceNo = data.invoice_no || "MM2025120607634";
+    // KODE UNIK dari Controller (angka acak 1-999), akan digunakan sebagai DISPLAY saja
+    const uniqueNumberCode = Number(data.unique_code) || 0;
+
+
+    // --- KOREKSI PENTING DI SINI ---
+    // 1. TOTAL TRANSFER HANYA NOMINAL MURNI
+    const totalTransfer = donatur.nominal; // KODE UNIK (uniqueNumberCode) TIDAK DITAMBAHKAN
+
+    // 2. Kode Unik Kata (Hanya untuk Display)
+    const getInitials = (title) => {
+        const words = title.split(/\s+/).filter(word => word.length > 0);
+        if (words.length >= 2) {
+            return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+        }
+        return title.substring(0, 2).toUpperCase();
+    };
+    const uniqueWordCode = getInitials(programTitle);
+
+    // Angka Unik yang ditampilkan (angka 1-999 yang sebenarnya dari DB)
+    const displayedNumberCode = uniqueNumberCode;
+    // --- AKHIR KOREKSI PENTING ---
+
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text);
         alert(`Berhasil menyalin: ${text}`);
     };
 
-    // --- FUNGSI UPDATE: Navigasi ke Halaman Konfirmasi ---
+    // FUNGSI NAVIGASI
     const handleManualConfirmation = () => {
         router.get(route('donasi.konfirmasi', { id: id }), {
-            // Kita kirim lagi datanya ke halaman sebelah
             name: donatur.name,
             email: donatur.email,
             phone: donatur.phone,
-            nominal: donatur.nominal
+            nominal: donatur.nominal,
+            unique_code_number: uniqueNumberCode, // Mengirimkan angka unik untuk dokumentasi
+            unique_code_word: uniqueWordCode,
+            total_transfer: totalTransfer // Nominal Murni
         });
     };
+
+    // Fallback jika data tidak ada
+    if (!donationData || !donatur.name) {
+         return (
+             <div className="min-h-screen flex flex-col items-center justify-center bg-red-50 p-6 text-center">
+                 <h1 className="text-xl font-bold text-red-700 mb-4">Kesalahan Data Donasi</h1>
+                 <p className="text-gray-600">Terjadi kesalahan dalam memuat data donasi. Silakan ulangi proses atau hubungi Admin.</p>
+                 <Link href={route('donasi.show', {id: id})} className="mt-4 text-blue-600 hover:text-blue-800 underline">Kembali ke halaman program</Link>
+             </div>
+         );
+    }
+
 
     return (
         <>
@@ -44,7 +82,7 @@ export default function PembayaranDonasi({ auth, id, data }) {
                         Minhaj<span className="text-green-900">Peduli</span>
                     </div>
                     <div className="flex items-center space-x-4 text-sm font-semibold">
-                        <Link href={route('donasi.detail', {id: id})} className="text-gray-600 hover:text-green-700">Kembali</Link>
+                        <Link href={route('donasi.show', {id: id})} className="text-gray-600 hover:text-green-700">Kembali</Link>
                     </div>
                 </nav>
 
@@ -76,6 +114,7 @@ export default function PembayaranDonasi({ auth, id, data }) {
                         </p>
                     </div>
 
+                    {/* --- BLOK RINCIAN DONASI --- */}
                     <div className="bg-white border border-gray-300 rounded-lg overflow-hidden mb-8 shadow-sm">
                         {/* Rincian Data */}
                         <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
@@ -90,6 +129,15 @@ export default function PembayaranDonasi({ auth, id, data }) {
                             <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Nomor Telepon</div>
                             <div className="p-4 md:col-span-2 text-gray-800">{donatur.phone}</div>
                         </div>
+
+                        {/* BARIS NAMA PROGRAM (Diperbarui dengan Kode Kata) */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Program Donasi</div>
+                            <div className="p-4 md:col-span-2 text-gray-800 font-semibold">
+                                {programTitle} (Kode: <span className="text-blue-700 font-bold">{uniqueWordCode}</span>)
+                            </div>
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
                             <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">No. Invoice</div>
                             <div className="p-4 md:col-span-2 text-gray-800">
@@ -110,20 +158,45 @@ export default function PembayaranDonasi({ auth, id, data }) {
                                 </div>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3">
-                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Jumlah</div>
+
+                        {/* Nominal Donasi (Dipisahkan) */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Nominal Donasi</div>
                             <div className="p-4 md:col-span-2 text-gray-800">
-                                <div className="text-xl font-bold flex items-center">
-                                    Rp {new Intl.NumberFormat('id-ID').format(donatur.nominal)}<span className="text-red-600">.{String(uniqueCode).padStart(3, '0')}</span>
+                                Rp {new Intl.NumberFormat('id-ID').format(donatur.nominal)}
+                            </div>
+                        </div>
+
+                        {/* Kode Unik (Dipisahkan) - KOREKSI TEKS */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 border-b border-gray-300">
+                            <div className="p-4 font-bold text-gray-700 bg-gray-50 md:bg-white">Kode Unik</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <div className="text-sm text-gray-600 mb-1">
+                                    Kode unik ini untuk identifikasi donasi Anda (tidak perlu ditransfer):
                                 </div>
-                                <div className="text-sm text-red-600 italic mt-2">*PENTING! (Mohon transfer sejumlah di atas).</div>
+                                {/* Kode Unik Angka = Angka Unik dari DB */}
+                                <span className="text-red-600 font-bold">
+                                    Rp {new Intl.NumberFormat('id-ID').format(displayedNumberCode)}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Total Transfer (Jumlah Final) - KOREKSI TOTAL TRANSFER */}
+                        <div className="grid grid-cols-1 md:grid-cols-3">
+                            <div className="p-4 font-bold text-green-700 bg-green-700/10 md:bg-white text-lg">TOTAL TRANSFER</div>
+                            <div className="p-4 md:col-span-2 text-gray-800">
+                                <div className="text-xl font-bold flex items-center text-green-700">
+                                    {/* HANYA NOMINAL MURNI */}
+                                    Rp {new Intl.NumberFormat('id-ID').format(totalTransfer)}
+                                </div>
+                                <div className="text-sm text-red-600 italic mt-2">*Mohon transfer sebesar nominal donasi Anda. Kode unik hanya untuk identifikasi.</div>
                             </div>
                         </div>
                     </div>
+                    {/* --- AKHIR BLOK RINCIAN DONASI --- */}
 
                     {/* Tombol Aksi */}
                     <div className="flex flex-col items-center gap-4">
-                        {/* UPDATE TOMBOL DI SINI */}
                         <button
                             onClick={handleManualConfirmation}
                             className="bg-[#fde047] hover:bg-yellow-400 text-yellow-900 font-bold py-3 px-8 rounded-full shadow-md w-full md:w-auto transition transform active:scale-95"
@@ -131,9 +204,12 @@ export default function PembayaranDonasi({ auth, id, data }) {
                             Konfirmasi manual
                         </button>
 
-                        <Link href="/" className="bg-[#4ade80] hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full shadow-md w-full md:w-auto text-center transition transform active:scale-95">
+                        <button
+                            onClick={handleManualConfirmation}
+                            className="bg-[#4ade80] hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full shadow-md w-full md:w-auto text-center transition transform active:scale-95"
+                        >
                             Sudah sesuai nominal
-                        </Link>
+                        </button>
                     </div>
 
                 </div>

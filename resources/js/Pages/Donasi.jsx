@@ -1,54 +1,70 @@
+// resources/js/Pages/Donasi.jsx
+
 import { Head, Link } from '@inertiajs/react';
 import { Search, MapPin, Phone, Mail } from 'lucide-react';
 import { useState } from 'react';
 
-export default function Donasi({ auth }) {
+// Fungsi helper untuk memformat angka menjadi Rupiah (Rp X.XXX.XXX)
+const formatRupiah = (number) => {
+    // Pastikan number adalah angka sebelum diformat
+    const num = Number(number);
+    // Tampilkan "Rp 0" jika 0 atau bukan angka
+    if (isNaN(num) || num === 0) return "Rp 0";
+
+    // Menggunakan Intl.NumberFormat untuk format Rupiah
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(num);
+};
+
+// Komponen menerima 'allPrograms' dan 'totalStats' sebagai props
+export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
     const [searchTerm, setSearchTerm] = useState('');
 
+    // --- Stats Data Dinamis ---
+    const totalCollected = totalStats.collected_amount || 0;
+    const totalDonatur = totalStats.total_donatur || 0;
+    // Menggunakan program_count dari totalStats (jika ada) atau hitung dari allPrograms
+    const programCount = totalStats.program_count || allPrograms.length;
+
     const statsData = [
-        { val: "4", label: "Program Donasi" },
-        { val: "Rp 31.233.890", label: "Total Donasi Terkumpul" },
-        { val: "265", label: "Total Donatur" }
+        // Menggunakan programCount nyata
+        { val: programCount.toString(), label: "Program Donasi" },
+        // Menggunakan collected_amount nyata dan diformat
+        { val: formatRupiah(totalCollected), label: "Total Donasi Terkumpul" },
+        // Menggunakan totalDonatur nyata
+        { val: totalDonatur.toString(), label: "Total Donatur" }
     ];
 
-    const programsData = [
-        {
-            id: 1,
-            title: "Pembangunan Asrama Santri",
-            current: "Rp 12.765.512",
-            target: "Rp 100.000.000",
-            pct: 10,
-            img: "/images/pesantren1.png"
-        },
-        {
-            id: 2,
-            title: "Pembangunan Pesantren Tahfidz",
-            current: "Rp 8.450.000",
-            target: "Rp 10.000.000",
-            pct: 84,
-            img: "/images/pesantren2.png"
-        },
-        {
-            id: 3,
-            title: "Wakaf Al-quran dan Buku",
-            current: "Rp 6.380.000",
-            target: "Rp 10.000.000",
-            pct: 68,
-            img: "/images/pesantren1.png"
-        },
-        {
-            id: 4,
-            title: "Pembangunan Masjid",
-            current: "Rp 8.483.890",
-            target: "Rp 10.000.000",
-            pct: 84,
-            img: "/images/pesantren2.png"
-        },
-    ];
+    // --- Memproses Programs Data dari Props ---
+    // Menggunakan allPrograms (data dinamis dari Controller)
+    const programsData = allPrograms.map(prog => ({
+        id: prog.id,
+        title: prog.title,
+        // Data yang datang dari backend adalah angka murni, kita format di frontend
+        current: formatRupiah(prog.collected_amount || 0),
+        target: formatRupiah(prog.target_amount || 0),
+        // Percentage langsung digunakan dari backend
+        pct: Number(prog.percentage) || 0,
+        img: prog.image_path || '/images/default.png', // Fallback image path
+    }));
 
-    const filteredPrograms = programsData.filter(program =>
+
+    // 1. Filter Program berdasarkan input pencarian
+    let filteredPrograms = programsData.filter(program =>
         program.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // 2. BATASI MAKSIMAL HANYA 4 PROGRAM YANG DITAMPILKAN
+    // Kecuali jika user sedang melakukan pencarian
+    // Catatan: Biasanya di halaman Donasi Index tidak dibatasi, tapi kita pertahankan logika Anda
+    // Jika Anda ingin menampilkan SEMUA program di halaman index, hapus if ini.
+    if (searchTerm === '') {
+        filteredPrograms = filteredPrograms.slice(0, 4);
+    }
+
 
     return (
         <>
@@ -56,7 +72,7 @@ export default function Donasi({ auth }) {
 
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* --- Navbar --- */}
+                {/* --- Navbar (Tidak Berubah) --- */}
                 <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
                     <div className="text-2xl font-bold text-green-700 italic">
                         Minhaj<span className="text-green-900">Peduli</span>
@@ -69,14 +85,14 @@ export default function Donasi({ auth }) {
                             Donasi
                         </Link>
                         {auth?.user && (
-                            <Link href={route('dashboard')} className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50">
+                            <Link href={route('admin.dashboard')} className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50">
                                 Dashboard
                             </Link>
                         )}
                     </div>
                 </nav>
 
-                {/* --- Hero Section --- */}
+                {/* --- Hero Section (Tidak Berubah) --- */}
                 <section className="relative h-[500px] flex items-center justify-center text-center px-4">
                     <div className="absolute inset-0 z-0">
                         <img src="/images/pesantren1.png" alt="Construction Site" className="w-full h-full object-cover" />
@@ -96,7 +112,7 @@ export default function Donasi({ auth }) {
                     </div>
                 </section>
 
-                {/* --- Stats Boxes --- */}
+                {/* --- Stats Boxes (Dinamis) --- */}
                 <section className="relative z-20 px-4 -mt-16 mb-12">
                     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                         {statsData.map((item, idx) => (
@@ -108,7 +124,7 @@ export default function Donasi({ auth }) {
                     </div>
                 </section>
 
-                {/* --- Quote Banner --- */}
+                {/* --- Quote Banner (Tidak Berubah) --- */}
                 <section className="relative h-64 flex items-center justify-center mb-12 overflow-hidden">
                     <div className="absolute inset-0 z-0">
                         <img src="/images/pesantren2.png" alt="Quote Background" className="w-full h-full object-cover" />
@@ -121,7 +137,7 @@ export default function Donasi({ auth }) {
                     </div>
                 </section>
 
-                {/* --- Program List Section --- */}
+                {/* --- Program List Section (Dinamis, dibatasi 4 item) --- */}
                 <section id="program-list" className="max-w-6xl mx-auto px-6 pb-20">
                     <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                         <h2 className="text-2xl font-bold text-green-900">Pilihan Program Donasi</h2>
@@ -138,6 +154,7 @@ export default function Donasi({ auth }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Looping pada program dinamis, difilter, dan dibatasi (max 4) */}
                         {filteredPrograms.length > 0 ? (
                             filteredPrograms.map((prog) => (
                                 <div key={prog.id} className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl transition-shadow duration-300">
@@ -150,13 +167,15 @@ export default function Donasi({ auth }) {
                                             {prog.current} / {prog.target} ({prog.pct}%)
                                         </div>
                                         <div className="w-full bg-pink-100 rounded-full h-3 mb-6 relative overflow-hidden">
+                                            {/* Progress bar menggunakan percentage dinamis */}
                                             <div className="bg-green-500 h-full rounded-full" style={{ width: `${prog.pct}%` }}></div>
-                                            <div className="absolute top-0 left-0 bg-[#86efac] h-full rounded-full opacity-50" style={{ width: `${prog.pct - 15}%` }}></div>
+                                            {/* Efek highlight bar */}
+                                            <div className="absolute top-0 left-0 bg-[#86efac] h-full rounded-full opacity-50" style={{ width: `${prog.pct - 15 > 0 ? prog.pct - 15 : 0}%` }}></div>
                                         </div>
                                         <div className="flex justify-end">
-                                            {/* LINK UPDATE: Mengarah ke halaman detail */}
                                             <Link
-                                                href={route('donasi.detail', { id: prog.id })}
+                                                // FIX: Menggunakan 'donasi.show' sesuai dengan web.php
+                                                href={route('donasi.show', { id: prog.id })}
                                                 className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md font-semibold text-sm shadow-md transition transform active:scale-95"
                                             >
                                                 Donasi Sekarang
@@ -171,9 +190,22 @@ export default function Donasi({ auth }) {
                             </div>
                         )}
                     </div>
+
+                    {/* Tampilkan tombol 'Lihat Semua' jika total program lebih dari 4 DAN tidak sedang mencari */}
+                    {programCount > 4 && searchTerm === '' && (
+                        <div className="text-center mt-10">
+                            <Link
+                                // Link ini harus mengarah ke halaman 'Lihat Semua' jika ada, atau reset pencarian
+                                href={route('donasi')}
+                                className="bg-green-600 text-white px-8 py-3 rounded-full hover:bg-green-700 transition shadow-lg font-semibold"
+                            >
+                                Lihat Semua Program ({programCount})
+                            </Link>
+                        </div>
+                    )}
                 </section>
 
-                {/* --- Footer --- */}
+                {/* --- Footer (Tidak Berubah) --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
