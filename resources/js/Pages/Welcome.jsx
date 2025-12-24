@@ -248,34 +248,37 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
                 </section>
 
-                {/* --- Tujuan Program (TETAP STATIS) --- */}
-                <section className="py-10 px-4 max-w-5xl mx-auto" id="tentang">
-                    <h2 className="text-center text-2xl font-bold text-green-800 mb-8 uppercase tracking-wide">
-                        Tujuan Program
-                    </h2>
-                    <div className="space-y-4">
-                        {goalsData.map((item, idx) => (
-                            <div
-                                key={idx}
-                                className="rounded-xl overflow-hidden shadow-md group"
-                            >
-                                <div className="bg-green-400 p-3 flex items-center group-hover:bg-green-500 transition">
-                                    <Check
-                                        className="text-white mr-3 shrink-0"
-                                        strokeWidth={3}
-                                        size={20}
-                                    />
-                                    <h3 className="font-bold text-white italic text-sm md:text-lg">
-                                        {item.title}
-                                    </h3>
-                                </div>
-                                <div className="bg-green-800 p-5 text-green-50 text-sm leading-relaxed">
-                                    {item.desc}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
+             {/* --- Tujuan Program (TETAP STATIS) --- */}
+<section className="py-10 px-4 max-w-5xl mx-auto" id="tentang">
+    <h2 className="text-center text-2xl font-bold text-green-800 mb-8 uppercase tracking-wide">
+        Tujuan Program
+    </h2>
+    <div className="space-y-4">
+        {goalsData.map((item, idx) => (
+            <div
+                key={idx}
+                className="rounded-xl overflow-hidden shadow-md group border border-green-100"
+            >
+                {/* Header Card */}
+                <div className="bg-green-500 p-3 flex items-center group-hover:bg-green-600 transition">
+                    <Check
+                        className="text-white mr-3 shrink-0"
+                        strokeWidth={3}
+                        size={20}
+                    />
+                    <h3 className="font-bold text-white italic text-sm md:text-lg">
+                        {item.title}
+                    </h3>
+                </div>
+
+                {/* Body/Deskripsi Card - DIPERBAIKI DISINI */}
+                <div className="bg-white p-5 text-gray-700 text-sm leading-relaxed">
+                    {item.desc}
+                </div>
+            </div>
+        ))}
+    </div>
+</section>
 
                 {/* --- Site Plan --- */}
                 <section className="py-10 px-4 text-center">

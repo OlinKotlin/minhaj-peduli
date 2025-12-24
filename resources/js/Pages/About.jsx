@@ -182,7 +182,7 @@ export default function About({ auth }) {
                                     {/* GANTI DENGAN FOTO KETUA */}
                                     <img
                                         src="/images/ketua-yayasan.jpg"
-                                        alt="Nopal Aditya Sadik"
+                                        alt="Foto Ketua Yayasan"
                                         className="w-full h-full object-cover"
                                         onError={(e) => {e.target.src = "https://via.placeholder.com/300x400?text=Foto+Ketua"}}
                                     />
@@ -196,7 +196,7 @@ export default function About({ auth }) {
                                     “Ketua Yayasan Pesantren Tahfidz Al-Minhaj adalah sosok yang berdedikasi dalam memajukan dakwah dan pendidikan Qur’ani, serta memastikan seluruh program berjalan dengan penuh integritas, keteladanan, dan rasa tanggung jawab.”
                                 </p>
                                 <div className="text-right mt-4">
-                                    <p className="font-bold text-xl tracking-wide">Nopal Aditya Sadik S.kom</p>
+                                    <p className="font-bold text-xl tracking-wide">ketua yayasan</p>
                                 </div>
                             </div>
                         </div>
