@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
+import Navbar from "@/Components/Navbar"; // Import Navbar Komponen
 import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function About({ auth }) {
@@ -8,37 +9,9 @@ export default function About({ auth }) {
 
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* --- Navbar (Konsisten dengan Welcome.jsx) --- */}
-                <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
-                    <div className="text-2xl font-bold text-green-700 italic">
-                        Minhaj<span className="text-green-900">Peduli</span>
-                    </div>
-
-                    <div className="flex items-center space-x-4 text-sm font-semibold">
-                        <Link href="/" className="text-gray-600 hover:text-green-700 transition">
-                            Beranda
-                        </Link>
-
-                        {/* Halaman Saat Ini (Aktif) */}
-                        <Link href={route('about')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">
-                            Tentang
-                        </Link>
-
-                        {/* UPDATE: Link Donasi sekarang mengarah ke route('donasi') */}
-                        <Link href={route('donasi')} className="text-gray-600 hover:text-green-700 transition">
-                            Donasi
-                        </Link>
-
-                        {auth?.user && (
-                            <Link
-                                href={route('dashboard')}
-                                className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50"
-                            >
-                                Dashboard
-                            </Link>
-                        )}
-                    </div>
-                </nav>
+                {/* --- MENGGUNAKAN NAVBAR BARU --- */}
+                {/* Navigasi manual dihapus, diganti komponen ini agar konsisten */}
+                <Navbar auth={auth} />
 
                 {/* --- Header / Hero Section --- */}
                 <section className="bg-green-50 py-12 px-6">
@@ -131,42 +104,42 @@ export default function About({ auth }) {
                     </div>
                 </section>
 
-{/* --- Tujuan Diagram Section --- */}
-<section className="bg-green-100 py-16 px-6 relative overflow-hidden">
-    <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="text-2xl font-bold text-green-800 uppercase mb-12 underline decoration-green-500 decoration-4 underline-offset-8">
-            TUJUAN
-        </h2>
+                {/* --- Tujuan Diagram Section --- */}
+                <section className="bg-green-100 py-16 px-6 relative overflow-hidden">
+                    <div className="max-w-4xl mx-auto text-center relative z-10">
+                        <h2 className="text-2xl font-bold text-green-800 uppercase mb-12 underline decoration-green-500 decoration-4 underline-offset-8">
+                            TUJUAN
+                        </h2>
 
-        {/* Layout Diagram (Tanpa Garis) */}
-        <div className="flex flex-col items-center relative">
+                        {/* Layout Diagram (Tanpa Garis) */}
+                        <div className="flex flex-col items-center relative">
 
-            {/* Baris Atas (2 Kotak) */}
-            <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16 relative z-10">
-                {/* Kotak Kiri */}
-                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
-                    <p className="text-green-900 font-bold text-sm">
-                        Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
-                    </p>
-                </div>
+                            {/* Baris Atas (2 Kotak) */}
+                            <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16 relative z-10">
+                                {/* Kotak Kiri */}
+                                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                                    <p className="text-green-900 font-bold text-sm">
+                                        Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
+                                    </p>
+                                </div>
 
-                {/* Kotak Kanan */}
-                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
-                    <p className="text-green-900 font-bold text-sm">
-                        Al-Minhaj berkomitmen mencetak hafizh dan hafizhah yang berakhlak mulia dan bermanfaat bagi umat.
-                    </p>
-                </div>
-            </div>
+                                {/* Kotak Kanan */}
+                                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                                    <p className="text-green-900 font-bold text-sm">
+                                        Al-Minhaj berkomitmen mencetak hafizh dan hafizhah yang berakhlak mulia dan bermanfaat bagi umat.
+                                    </p>
+                                </div>
+                            </div>
 
-            {/* Baris Bawah (1 Kotak Tengah) */}
-            <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4 z-10">
-                <p className="text-green-900 font-bold text-sm">
-                    Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
-                </p>
-            </div>
-        </div>
-    </div>
-</section>
+                            {/* Baris Bawah (1 Kotak Tengah) */}
+                            <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4 z-10">
+                                <p className="text-green-900 font-bold text-sm">
+                                    Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 {/* --- Ketua Yayasan Section --- */}
                 <section className="bg-green-700 py-16 px-6 text-white mt-10">
@@ -203,7 +176,7 @@ export default function About({ auth }) {
                     </div>
                 </section>
 
-                {/* --- Footer (Sama persis dengan Welcome.jsx) --- */}
+                {/* --- Footer --- */}
                 <footer className="w-full mt-0 bg-green-50">
                      <div className="py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">

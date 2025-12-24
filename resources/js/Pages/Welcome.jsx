@@ -1,4 +1,5 @@
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
+import Navbar from "@/Components/Navbar"; // Pastikan path ini benar sesuai struktur folder Anda
 import {
     Check,
     MapPin,
@@ -9,11 +10,10 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-// Fungsi helper untuk memformat angka menjadi Rupiah (Rp X.XXX.XXX)
+// Fungsi helper untuk memformat angka menjadi Rupiah
 const formatRupiah = (number) => {
     const num = Number(number);
     if (isNaN(num) || num === 0) return "Rp 0";
-    // Menggunakan Intl.NumberFormat untuk format Rupiah
     return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
@@ -27,11 +27,8 @@ const heroImages = [
     "/images/pesantren1.png",
 ];
 
-// =========================================================================
-// PERUBAHAN KRITIS: Menerima props programsData dan totalStats dari backend
-// =========================================================================
 export default function Welcome({ auth, programsData, totalStats }) {
-    // Data Tujuan Program (TETAP STATIS karena ini konten halaman)
+    // Data Tujuan Program (Statis)
     const goalsData = [
         {
             title: "Meningkatkan Akses dan Kualitas Pembelajaran Keagamaan",
@@ -54,80 +51,33 @@ export default function Welcome({ auth, programsData, totalStats }) {
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % heroImages.length);
         }, 4000);
-
         return () => clearInterval(interval);
     }, []);
 
-    // =========================================================================
-    // 1. Data Statistik (SEKARANG DINAMIS dari totalStats)
-    // =========================================================================
+    // Data Statistik Dinamis dari Props
     const dynamicStatsData = [
         {
-            val: totalStats.program_count
-                ? totalStats.program_count.toString()
-                : "0",
+            val: totalStats.program_count ? totalStats.program_count.toString() : "0",
             label: "Program Donasi",
         },
         {
-            val: totalStats.collected_amount
-                ? formatRupiah(totalStats.collected_amount)
-                : "Rp 0",
+            val: totalStats.collected_amount ? formatRupiah(totalStats.collected_amount) : "Rp 0",
             label: "Total Donasi Terkumpul",
         },
         {
-            val: totalStats.total_donatur
-                ? totalStats.total_donatur.toString()
-                : "0",
+            val: totalStats.total_donatur ? totalStats.total_donatur.toString() : "0",
             label: "Total Donatur",
         },
     ];
-    // Pastikan programsData yang diterima dari backend digunakan langsung di bagian Program Donasi
 
     return (
         <>
             <Head title="Beranda" />
 
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
-                {/* --- Navbar --- */}
-                <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
-                    <div className="text-2xl font-bold text-green-700 italic">
-                        Minhaj<span className="text-green-900">Peduli</span>
-                    </div>
 
-                    <div className="flex items-center space-x-4 text-sm font-semibold">
-                        {/* PERBAIKAN 1: Menggunakan route('welcome') yang mengarah ke '/' */}
-                        <Link
-                            href={route("welcome")}
-                            className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md"
-                        >
-                            Beranda
-                        </Link>
-
-                        <Link
-                            href={route("about")}
-                            className="text-gray-600 hover:text-green-700 transition"
-                        >
-                            Tentang
-                        </Link>
-
-                        <Link
-                            href={route("donasi")}
-                            className="text-gray-600 hover:text-green-700 transition"
-                        >
-                            Donasi
-                        </Link>
-
-                        {/* Link ke Dashboard Admin (Jika user terdeteksi) */}
-                        {auth?.user && (
-                            <Link
-                                href={route("admin.dashboard")}
-                                className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50"
-                            >
-                                Dashboard
-                            </Link>
-                        )}
-                    </div>
-                </nav>
+                {/* --- MENGGUNAKAN NAVBAR BARU --- */}
+                <Navbar auth={auth} />
 
                 {/* --- Header Logo Area --- */}
                 <div className="text-center py-10 bg-white">
@@ -143,7 +93,7 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </h1>
                 </div>
 
-                {/* --- Hero Section (Tidak Berubah) --- */}
+                {/* --- Hero Section --- */}
                 <section className="w-full">
                     <div className="grid md:grid-cols-2">
                         {/* Kolom Kiri */}
@@ -163,9 +113,7 @@ export default function Welcome({ auth, programsData, totalStats }) {
                                 dan berdaya.
                             </p>
                         </div>
-                        {/* Kolom Kanan */}
-                        {/* Kolom Kanan (SLIDER) */}
-                        {/* Kolom Kanan (SLIDER) */}
+                        {/* Kolom Kanan (Slider) */}
                         <div className="relative h-64 md:h-auto w-full overflow-hidden">
                             {heroImages.map((img, idx) => (
                                 <img
@@ -180,7 +128,7 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
                 </section>
 
-                {/* --- Stats Section (SEKARANG DINAMIS) --- */}
+                {/* --- Stats Section --- */}
                 <section className="py-10 px-4">
                     <div className="flex justify-center mb-6 text-green-700 text-2xl gap-4 items-center opacity-70">
                         {/* Tombol Prev */}
@@ -198,7 +146,7 @@ export default function Welcome({ auth, programsData, totalStats }) {
                             />
                         </button>
 
-                        {/* Indikator titik dinamis */}
+                        {/* Indikator */}
                         <span className="tracking-[0.5em] text-sm font-bold">
                             {heroImages.map((_, idx) => (
                                 <span
@@ -231,7 +179,6 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto text-center text-white">
-                        {/* MENGGUNAKAN dynamicStatsData */}
                         {dynamicStatsData.map((item, idx) => (
                             <div
                                 key={idx}
@@ -248,37 +195,37 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
                 </section>
 
-             {/* --- Tujuan Program (TETAP STATIS) --- */}
-<section className="py-10 px-4 max-w-5xl mx-auto" id="tentang">
-    <h2 className="text-center text-2xl font-bold text-green-800 mb-8 uppercase tracking-wide">
-        Tujuan Program
-    </h2>
-    <div className="space-y-4">
-        {goalsData.map((item, idx) => (
-            <div
-                key={idx}
-                className="rounded-xl overflow-hidden shadow-md group border border-green-100"
-            >
-                {/* Header Card */}
-                <div className="bg-green-500 p-3 flex items-center group-hover:bg-green-600 transition">
-                    <Check
-                        className="text-white mr-3 shrink-0"
-                        strokeWidth={3}
-                        size={20}
-                    />
-                    <h3 className="font-bold text-white italic text-sm md:text-lg">
-                        {item.title}
-                    </h3>
-                </div>
+                {/* --- Tujuan Program (Versi Terbaca/Clean) --- */}
+                <section className="py-10 px-4 max-w-5xl mx-auto" id="tentang">
+                    <h2 className="text-center text-2xl font-bold text-green-800 mb-8 uppercase tracking-wide">
+                        Tujuan Program
+                    </h2>
+                    <div className="space-y-4">
+                        {goalsData.map((item, idx) => (
+                            <div
+                                key={idx}
+                                className="rounded-xl overflow-hidden shadow-md group border border-green-100"
+                            >
+                                {/* Header Card */}
+                                <div className="bg-green-500 p-3 flex items-center group-hover:bg-green-600 transition">
+                                    <Check
+                                        className="text-white mr-3 shrink-0"
+                                        strokeWidth={3}
+                                        size={20}
+                                    />
+                                    <h3 className="font-bold text-white italic text-sm md:text-lg">
+                                        {item.title}
+                                    </h3>
+                                </div>
 
-                {/* Body/Deskripsi Card - DIPERBAIKI DISINI */}
-                <div className="bg-white p-5 text-gray-700 text-sm leading-relaxed">
-                    {item.desc}
-                </div>
-            </div>
-        ))}
-    </div>
-</section>
+                                {/* Body (Background Putih agar tulisan terbaca) */}
+                                <div className="bg-white p-5 text-gray-700 text-sm leading-relaxed">
+                                    {item.desc}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
                 {/* --- Site Plan --- */}
                 <section className="py-10 px-4 text-center">
@@ -286,8 +233,6 @@ export default function Welcome({ auth, programsData, totalStats }) {
                         Site Plan Pesantren Al-Minhaj
                     </h2>
                     <div className="max-w-4xl mx-auto bg-white p-2 rounded-lg shadow-lg border border-gray-200">
-                        {/* Menambahkan visualisasi site plan untuk kejelasan */}
-
                         <img
                             src="/images/Site-plan.png"
                             alt="Site Plan Pesantren Al-Minhaj"
@@ -296,7 +241,7 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
                 </section>
 
-                {/* --- Program Donasi (SEKARANG DINAMIS) --- */}
+                {/* --- Program Donasi --- */}
                 <section className="py-12 px-4 max-w-6xl mx-auto" id="donasi">
                     <div className="text-center mb-10">
                         <h2 className="text-3xl font-bold text-green-800 uppercase mb-2">
@@ -308,7 +253,6 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* MENGGUNAKAN programsData DARI BACKEND */}
                         {programsData.map((prog, idx) => (
                             <div
                                 key={idx}
@@ -324,11 +268,9 @@ export default function Welcome({ auth, programsData, totalStats }) {
                                         <h3 className="text-xl font-bold text-gray-800 mb-3 font-serif">
                                             {prog.title}
                                         </h3>
-                                        {/* Progress Bar */}
                                         <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
                                             <div
                                                 className="bg-green-500 h-3 rounded-full transition-all duration-1000"
-                                                // MENGGUNAKAN 'percentage' DARI BACKEND
                                                 style={{
                                                     width: `${prog.percentage}%`,
                                                 }}
@@ -337,25 +279,19 @@ export default function Welcome({ auth, programsData, totalStats }) {
                                     </div>
                                     <div className="flex justify-between items-end mt-2">
                                         <div className="text-xs text-gray-600 space-y-1">
-                                            {/* MENGGUNAKAN 'collected_amount' dan 'target_amount' DARI BACKEND */}
                                             <p>
                                                 Terkumpul:{" "}
                                                 <span className="font-bold text-green-700">
-                                                    {formatRupiah(
-                                                        prog.collected_amount
-                                                    )}
+                                                    {formatRupiah(prog.collected_amount)}
                                                 </span>
                                             </p>
                                             <p>
                                                 Target:{" "}
-                                                {formatRupiah(
-                                                    prog.target_amount
-                                                )}
+                                                {formatRupiah(prog.target_amount)}
                                             </p>
                                         </div>
 
                                         <Link
-                                            // MENGARAHKAN KE DETAIL PROGRAM: donasi.show
                                             href={route("donasi.show", prog.id)}
                                             className="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-2 px-4 rounded shadow-md transform active:scale-95 transition"
                                         >
@@ -368,7 +304,7 @@ export default function Welcome({ auth, programsData, totalStats }) {
                     </div>
                 </section>
 
-                {/* --- Footer (Tidak Berubah) --- */}
+                {/* --- Footer --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">

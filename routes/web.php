@@ -64,6 +64,11 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
+// Halaman Laporan (BARU DITAMBAHKAN)
+Route::get('/laporan', function () {
+    return Inertia::render('Laporan');
+})->name('laporan');
+
 // Halaman List Donasi (INDEX) - Menggunakan Controller
 Route::get('/donasi', [DonationController::class, 'index'])->name('donasi');
 
@@ -137,5 +142,3 @@ Route::get('/forgot-password', function () {
         'status' => session('status'),
     ]);
 })->name('password.request');
-
-
