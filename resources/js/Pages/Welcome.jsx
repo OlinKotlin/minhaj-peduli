@@ -23,7 +23,7 @@ const formatRupiah = (number) => {
 
 const heroImages = [
     "/images/pesantren1.png",
-    "/images/pesantren1.png",
+    "/images/pesantren2.png",
     "/images/pesantren1.png",
 ];
 

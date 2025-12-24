@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import Navbar from "@/Components/Navbar"; // Import Navbar Komponen
+import Navbar from "@/Components/Navbar";
 import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function About({ auth }) {
@@ -7,16 +7,15 @@ export default function About({ auth }) {
         <>
             <Head title="Tentang Kami" />
 
-            <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
+            <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans overflow-x-hidden">
 
-                {/* --- MENGGUNAKAN NAVBAR BARU --- */}
-                {/* Navigasi manual dihapus, diganti komponen ini agar konsisten */}
                 <Navbar auth={auth} />
 
                 {/* --- Header / Hero Section --- */}
                 <section className="bg-green-50 py-12 px-6">
                     <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
-                        <div className="md:w-1/2">
+                        {/* Teks Animasi Masuk */}
+                        <div className="md:w-1/2 animate-slide-in-left">
                             <h1 className="text-3xl md:text-4xl font-bold text-green-900 mb-2">
                                 Selamat Datang di Pondok Pesantren Al-Minhaj
                             </h1>
@@ -24,14 +23,17 @@ export default function About({ auth }) {
                                 Mari Berkenalan Lebih Jauh!
                             </p>
                         </div>
-                        <div className="md:w-1/2 flex justify-center md:justify-end">
-                            {/* Placeholder Gambar Konstruksi Atas */}
-                            <div className="bg-green-200 p-2 rounded-3xl shadow-lg w-full max-w-md h-64 overflow-hidden relative">
+
+                        {/* Gambar Animasi Masuk & Hover */}
+                        <div className="md:w-1/2 flex justify-center md:justify-end animate-fade-in-up delay-200">
+                            <div className="bg-green-200 p-2 rounded-3xl shadow-lg w-full max-w-md h-64 overflow-hidden relative group cursor-pointer transition-transform duration-500 hover:scale-[1.02] hover:shadow-2xl">
                                 <img
                                     src="/images/pesantren1.png"
                                     alt="Konstruksi Pesantren"
-                                    className="w-full h-full object-cover rounded-2xl"
+                                    className="w-full h-full object-cover rounded-2xl transition-transform duration-700 group-hover:scale-110"
                                 />
+                                {/* Efek Kilau saat hover */}
+                                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                             </div>
                         </div>
                     </div>
@@ -40,22 +42,24 @@ export default function About({ auth }) {
                 {/* --- Tentang Kami Section --- */}
                 <section className="bg-green-700 py-16 px-6 text-white">
                     <div className="max-w-6xl mx-auto">
-                        <h2 className="text-2xl font-bold uppercase border-b-2 border-green-400 inline-block mb-8">
+                        <h2 className="text-2xl font-bold uppercase border-b-2 border-green-400 inline-block mb-8 animate-fade-in">
                             Tentang Kami
                         </h2>
 
                         <div className="flex flex-col md:flex-row gap-8 items-start">
-                             {/* Gambar Pondasi */}
-                            <div className="md:w-1/3 w-full">
-                                <img
-                                    src="/images/pesantren2.png"
-                                    alt="Pondasi Pesantren"
-                                    className="w-full h-64 object-cover rounded-xl border-4 border-green-600 shadow-xl"
-                                />
+                             {/* Gambar Pondasi dengan Efek Zoom */}
+                            <div className="md:w-1/3 w-full animate-fade-in-up">
+                                <div className="overflow-hidden rounded-xl border-4 border-green-600 shadow-xl group">
+                                    <img
+                                        src="/images/pesantren2.png"
+                                        alt="Pondasi Pesantren"
+                                        className="w-full h-64 object-cover transform transition-transform duration-700 group-hover:scale-110 group-hover:rotate-1"
+                                    />
+                                </div>
                             </div>
 
                             {/* Teks Deskripsi */}
-                            <div className="md:w-2/3 text-sm md:text-base leading-relaxed space-y-4 text-green-50 text-justify">
+                            <div className="md:w-2/3 text-sm md:text-base leading-relaxed space-y-4 text-green-50 text-justify animate-fade-in-up delay-100">
                                 <p>
                                     Pondok Pesantren Al-Minhaj adalah lembaga pendidikan Islam yang berfokus pada pembinaan generasi Qur'ani melalui program tahfidz Al-Qur'an tingkat SD dan SMP. Kami memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf, sebagai bentuk kepedulian dan dakwah pendidikan.
                                 </p>
@@ -72,13 +76,14 @@ export default function About({ auth }) {
                     <div className="max-w-5xl mx-auto space-y-16">
 
                         {/* VISI */}
-                        <div className="text-center">
+                        <div className="text-center animate-fade-in-up">
                             <div className="flex items-center justify-center gap-4 mb-6">
                                 <div className="h-px w-20 bg-green-700"></div>
                                 <h2 className="text-2xl font-bold text-green-800 uppercase">VISI</h2>
                                 <div className="h-px w-20 bg-green-700"></div>
                             </div>
-                            <div className="bg-green-600 text-white p-8 rounded-xl shadow-lg italic text-lg leading-relaxed">
+                            {/* Card Hover Lift */}
+                            <div className="bg-green-600 text-white p-8 rounded-xl shadow-lg italic text-lg leading-relaxed transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-green-700 cursor-default">
                                 "Membangun pusat pendidikan Islam dengan model pesantren dengan dukungan bangunan fisik (gedung pendidikan dan masjid) yang berkualitas serta sarana dan prasarana modern yang mendukung proses pembelajaran para santri"
                             </div>
                         </div>
@@ -92,10 +97,10 @@ export default function About({ auth }) {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
-                                <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify">
+                                <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-green-700">
                                     Menjadikan pesantren (ma'had) sebagai tempat yang memadai sekaligus menyenangkan bagi para santri maupun para pendidik (ustadz/guru) dalam proses belajar-mengajar, baik menghafal al-Quran maupun mengkaji kitab kuning.
                                 </div>
-                                <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify">
+                                <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-green-700">
                                     Menjadikan pesantren (ma'had) sebagai tempat yang mendukung proses percepatan pembinaan dan pengkaderan generasi penghapal dan pejuang al-Quran, khususnya dari kalangan anak-anak yatim dan dhuafa.
                                 </div>
                             </div>
@@ -111,28 +116,24 @@ export default function About({ auth }) {
                             TUJUAN
                         </h2>
 
-                        {/* Layout Diagram (Tanpa Garis) */}
                         <div className="flex flex-col items-center relative">
-
-                            {/* Baris Atas (2 Kotak) */}
+                            {/* Baris Atas */}
                             <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16 relative z-10">
-                                {/* Kotak Kiri */}
-                                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] transform transition-transform duration-300 hover:scale-105 hover:bg-green-100">
                                     <p className="text-green-900 font-bold text-sm">
                                         Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
                                     </p>
                                 </div>
 
-                                {/* Kotak Kanan */}
-                                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px]">
+                                <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] transform transition-transform duration-300 hover:scale-105 hover:bg-green-100">
                                     <p className="text-green-900 font-bold text-sm">
                                         Al-Minhaj berkomitmen mencetak hafizh dan hafizhah yang berakhlak mulia dan bermanfaat bagi umat.
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Baris Bawah (1 Kotak Tengah) */}
-                            <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4 z-10">
+                            {/* Baris Bawah */}
+                            <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4 z-10 transform transition-transform duration-300 hover:scale-105 hover:bg-green-100">
                                 <p className="text-green-900 font-bold text-sm">
                                     Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
                                 </p>
@@ -149,27 +150,27 @@ export default function About({ auth }) {
                         </h2>
 
                         <div className="flex flex-col md:flex-row items-center gap-10">
-                            {/* Foto Profil */}
-                            <div className="bg-white p-3 shadow-2xl transform -rotate-2 md:rotate-0 hover:rotate-0 transition duration-500">
-                                <div className="w-64 h-80 bg-gray-300 overflow-hidden">
-                                    {/* GANTI DENGAN FOTO KETUA */}
+                            {/* Foto Profil dengan Efek Polaroid Swing */}
+                            <div className="bg-white p-3 shadow-2xl transform -rotate-2 hover:rotate-0 hover:scale-105 transition duration-500 ease-in-out cursor-pointer">
+                                <div className="w-64 h-80 bg-gray-300 overflow-hidden relative group">
                                     <img
                                         src="/images/ketua-yayasan.jpg"
                                         alt="Foto Ketua Yayasan"
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         onError={(e) => {e.target.src = "https://via.placeholder.com/300x400?text=Foto+Ketua"}}
                                     />
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                                 </div>
                             </div>
 
-                            {/* Teks Quote & Nama */}
-                            <div className="flex-1 text-center md:text-left">
+                            {/* Teks Quote Animasi Masuk */}
+                            <div className="flex-1 text-center md:text-left animate-slide-in-right">
                                 <h3 className="text-4xl font-bold font-serif italic mb-4">Loremipsum</h3>
                                 <p className="text-green-100 italic text-lg leading-relaxed mb-6">
                                     “Ketua Yayasan Pesantren Tahfidz Al-Minhaj adalah sosok yang berdedikasi dalam memajukan dakwah dan pendidikan Qur’ani, serta memastikan seluruh program berjalan dengan penuh integritas, keteladanan, dan rasa tanggung jawab.”
                                 </p>
                                 <div className="text-right mt-4">
-                                    <p className="font-bold text-xl tracking-wide">ketua yayasan</p>
+                                    <p className="font-bold text-xl tracking-wide border-t border-green-500 inline-block pt-2">ketua yayasan</p>
                                 </div>
                             </div>
                         </div>
@@ -192,8 +193,8 @@ export default function About({ auth }) {
                                 <div>
                                     <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
                                     <ul className="space-y-3">
-                                        <li className="flex items-start">
-                                            <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" />
+                                        <li className="flex items-start group">
+                                            <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0 group-hover:scale-110 transition-transform" />
                                             <span className="text-green-800 leading-relaxed">
                                                 Desa kuripan Kel.Kuripan<br />
                                                 Kec. Ciseeng, Bogor, Jawa Barat
@@ -204,12 +205,12 @@ export default function About({ auth }) {
                                 <div>
                                     <h3 className="text-xl font-bold mb-4 text-green-900">Kontak kami</h3>
                                     <ul className="space-y-3">
-                                        <li className="flex items-center">
-                                            <Mail className="w-6 h-6 text-green-700 mr-3" />
+                                        <li className="flex items-center group">
+                                            <Mail className="w-6 h-6 text-green-700 mr-3 group-hover:scale-110 transition-transform" />
                                             <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a>
                                         </li>
-                                        <li className="flex items-center">
-                                            <Phone className="w-6 h-6 text-green-700 mr-3" />
+                                        <li className="flex items-center group">
+                                            <Phone className="w-6 h-6 text-green-700 mr-3 group-hover:scale-110 transition-transform" />
                                             <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">081234567890</a>
                                         </li>
                                     </ul>
@@ -225,6 +226,40 @@ export default function About({ auth }) {
                         </p>
                     </div>
                 </footer>
+
+                {/* STYLE ANIMASI CUSTOM */}
+                <style>{`
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    @keyframes slideInLeft {
+                        from { opacity: 0; transform: translateX(-30px); }
+                        to { opacity: 1; transform: translateX(0); }
+                    }
+                    @keyframes slideInRight {
+                        from { opacity: 0; transform: translateX(30px); }
+                        to { opacity: 1; transform: translateX(0); }
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    .animate-fade-in-up {
+                        animation: fadeInUp 0.8s ease-out forwards;
+                    }
+                    .animate-slide-in-left {
+                        animation: slideInLeft 0.8s ease-out forwards;
+                    }
+                    .animate-slide-in-right {
+                        animation: slideInRight 0.8s ease-out forwards;
+                    }
+                    .animate-fade-in {
+                        animation: fadeIn 1s ease-out forwards;
+                    }
+                    .delay-100 { animation-delay: 0.1s; }
+                    .delay-200 { animation-delay: 0.2s; }
+                `}</style>
 
             </div>
         </>
