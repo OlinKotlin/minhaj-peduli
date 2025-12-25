@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import Navbar from "@/Components/Navbar";
-import { Search, MapPin, Phone, Mail } from 'lucide-react';
+import { Search, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 
 // Fungsi helper format Rupiah
