@@ -13,13 +13,17 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pastikan Anda mengimpor Model Admin di bagian atas
-        Admin::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@minhaj.com', // Email ini yang akan Anda gunakan untuk login
-            'password' => Hash::make('password'), // Password: 'password' (enkripsi)
-            'email_verified_at' => now(),
-        ]);
+        // Gunakan updateOrCreate agar seeder idempoten (aman dijalankan berulang)
+        Admin::updateOrCreate(
+            ['email' => 'admin@minhaj.com'],
+            [
+                'name' => 'Super Admin',
+                // Simpan password sebagai plain; model `Admin` memiliki cast 'password' => 'hashed'
+                // sehingga nilai ini akan di-hash otomatis saat disimpan.
+                'password' => 'password',
+                'email_verified_at' => now(),
+            ]
+        );
 
         // Anda bisa menambahkan admin lain jika perlu:
         // Admin::create([

@@ -19,7 +19,7 @@
             // Jika Anda ingin mengarahkan ke halaman 'about' setelah berhasil login,
             // Anda harus mengubah controller/service di sisi Laravel (mis. RouteServiceProvider).
 
-            post(route('login'), {
+            post(route('admin.login.post'), {
                 onFinish: () => reset('password'),
 
                 // Opsional: Redirect langsung di frontend setelah sukses (HANYA untuk bypass backend)

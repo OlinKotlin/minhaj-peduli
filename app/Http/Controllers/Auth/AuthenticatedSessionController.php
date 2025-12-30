@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response; // Penting untuk type hint Inertia::render
 
@@ -24,7 +26,42 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
-    // ... (store dan destroy untuk pengguna biasa tidak diubah) ...
+    /**
+     * Handle an incoming authentication request for regular users.
+     */
+    public function store(LoginRequest $request): RedirectResponse
+    {
+        // Gunakan guard 'admin' untuk endpoint /login agar login diarahkan ke admin
+        $request->ensureIsNotRateLimited();
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+            RateLimiter::clear($request->throttleKey());
+
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        RateLimiter::hit($request->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.failed'),
+        ]);
+    }
+
+    /**
+     * Destroy an authenticated session for regular users.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
 
     // =======================================================
     // --- METODE BARU UNTUK ADMIN (MENGGUNAKAN GUARD 'admin') ---
@@ -36,10 +73,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function createAdmin(): Response
     {
-        // GANTI INI: return view('auth.admin_login');
-
-        // MENGGUNAKAN INI:
-        return Inertia::render('Auth/AdminLogin');
+        // Tampilkan komponen Inertia yang ada di resources/js/Pages/Admin/Login.jsx
+        return Inertia::render('Admin/Login');
     }
 
     /**
