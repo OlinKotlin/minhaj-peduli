@@ -22,7 +22,6 @@ Route::get('/', function () {
         ->limit(4)
         ->get()
         ->map(function ($program) {
-            // Menggunakan status='paid' dan kolom 'nominal' untuk konsistensi
             $collected_amount = $program->donations->where('status', 'paid')->sum('nominal');
             $target_amount = $program->target_amount;
 
@@ -42,7 +41,6 @@ Route::get('/', function () {
         });
 
     $totalCollectedAmount = Donation::where('status', 'paid')->sum('nominal');
-    // Menggunakan kolom 'name' atau 'email' yang pasti ada
     $totalDonaturCount = Donation::where('status', 'paid')->distinct('name')->count();
     $totalProgramCount = Program::count();
 
@@ -64,30 +62,26 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
-// Halaman Laporan (BARU DITAMBAHKAN)
+// Halaman Laporan
 Route::get('/laporan', function () {
     return Inertia::render('Laporan');
 })->name('laporan');
 
-// Halaman List Donasi (INDEX) - Menggunakan Controller
+// Halaman List Donasi (INDEX)
 Route::get('/donasi', [DonationController::class, 'index'])->name('donasi');
 
 // =========================================================================
 // RUTE TRANSAKSI DONASI
 // =========================================================================
 
-// RUTE FORM DONASI
 Route::get('/donasi/form/{id}/{nominal}', function ($id, $nominal) {
     return inertia('FormDonasi', ['id' => $id, 'nominal' => $nominal]);
 })->name('donasi.form');
 
-// 1. Rute POST untuk MENYIMPAN data donatur (Memanggil storeDonation)
 Route::post('/donasi/{id}/store', [DonationController::class, 'storeDonation'])->name('donasi.store');
 
-// 2. Rute GET untuk menampilkan halaman Pembayaran (Memanggil paymentForm)
 Route::get('/donasi/{id}/pembayaran', [DonationController::class, 'paymentForm'])->name('donasi.pembayaran');
 
-// RUTE KONFIRMASI PEMBAYARAN
 Route::get('/donasi/{id}/konfirmasi', function ($id) {
     return Inertia::render('KonfirmasiPembayaran', [
         'id' => $id,
@@ -95,8 +89,7 @@ Route::get('/donasi/{id}/konfirmasi', function ($id) {
     ]);
 })->name('donasi.konfirmasi');
 
-
-// Rute Detail Donasi (SHOW)
+// Rute Detail Donasi (Public)
 Route::get('/donasi/{id}', [DonationController::class, 'show'])->name('donasi.show');
 
 
@@ -107,38 +100,34 @@ Route::get('/donasi/{id}', [DonationController::class, 'show'])->name('donasi.sh
 */
 
 Route::prefix('admin')->group(function () {
-    Route::get('/login', [AuthenticatedSessionController::class, 'createAdmin'])
-        ->name('admin.login');
-    Route::post('/login', [AuthenticatedSessionController::class, 'storeAdmin'])
-        ->name('admin.login.post');
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroyAdmin'])
-        ->name('admin.logout');
+    Route::get('/login', [AuthenticatedSessionController::class, 'createAdmin'])->name('admin.login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'storeAdmin'])->name('admin.login.post');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroyAdmin'])->name('admin.logout');
 });
 
+// GROUP ADMIN (Membutuhkan Login)
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+
+    // Dashboard & Menu Utama
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
+
+    // --- [MODIFIKASI: PENAMBAHAN FITUR DETAIL DONASI] ---
+    // 1. Rute untuk melihat detail donasi berdasarkan ID
+    Route::get('/donations/{id}', [AdminController::class, 'showDonation'])->name('donations.show');
+
+    // 2. Rute untuk memproses tombol Terima/Tolak (Update Status)
+    Route::post('/donations/{id}/update-status', [AdminController::class, 'updateDonationStatus'])->name('donations.update-status');
+    // ----------------------------------------------------
+
     Route::get('/programs', [AdminController::class, 'programs'])->name('programs');
     Route::get('/donatur', [AdminController::class, 'donatur'])->name('donatur');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
 
+// Auth Routes (Login/Register User Biasa)
 require __DIR__.'/auth.php';
 
-
-// Route Login
-Route::get('/login', function () {
-    return Inertia::render('Auth/Login');
-})->name('login');
-
-// Route Register
-Route::get('/register', function () {
-    return Inertia::render('Auth/Register');
-})->name('register');
-
-// Route Halaman Lupa Password
-Route::get('/forgot-password', function () {
-    return Inertia::render('Auth/ForgotPassword', [
-        'status' => session('status'),
-    ]);
-})->name('password.request');
+Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
+Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
+Route::get('/forgot-password', fn () => Inertia::render('Auth/ForgotPassword', ['status' => session('status')]))->name('password.request');

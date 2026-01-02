@@ -10,23 +10,37 @@ class Donation extends Model
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable, synchronized with the Controller.
-     *
-     * @var array<int, string>
+     * Daftar kolom yang bisa diisi (Mass Assignable).
+     * Sudah disesuaikan dengan kebutuhan Dashboard & Detail Donasi.
      */
     protected $fillable = [
         'program_id',
-        'invoice_no',    // <-- DITAMBAHKAN (Wajib)
-        'name',          // <-- DIGANTI dari 'donatur_name'
-        'email',         // <-- DITAMBAHKAN (Wajib)
-        'phone',         // <-- DITAMBAHKAN (Wajib)
-        'notes',         // <-- DITAMBAHKAN (Wajib)
-        'nominal',       // <-- DIGANTI dari 'amount'
-        'unique_code',   // <-- DITAMBAHKAN (Wajib)
-        'status',        // <-- DIGANTI dari 'is_paid'
+        'invoice_no',       // Nomor Invoice (contoh: INV-2023001)
+        'name',             // Nama Donatur
+        'email',            // Email Donatur
+        'phone',            // WhatsApp Donatur
+        'notes',            // Doa atau Catatan
+        'nominal',          // Jumlah Donasi utama
+        'unique_code',      // Kode unik (1-999)
+        'status',           // Status: 'pending', 'paid', 'failed'
+        'payment_method',   // (Opsional) Bank Transfer, QRIS, dll
+        'proof_of_payment'  // (Opsional) Path gambar bukti transfer
     ];
 
-    // Relasi: Banyak Donasi dimiliki oleh satu Program
+    /**
+     * Casting tipe data agar aman saat diolah.
+     * Mengubah string angka menjadi integer murni.
+     */
+    protected $casts = [
+        'nominal' => 'integer',
+        'unique_code' => 'integer',
+        'program_id' => 'integer',
+    ];
+
+    /**
+     * RELASI DATABASE
+     * Satu donasi terhubung ke satu program.
+     */
     public function program()
     {
         return $this->belongsTo(Program::class);
