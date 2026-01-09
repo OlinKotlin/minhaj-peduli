@@ -15,7 +15,6 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        // 1. Mengambil Statistik Asli dari Database
         $stats = [
             'total_donation'    => 'Rp ' . number_format(Donation::where('status', 'paid')->sum('nominal'), 0, ',', '.'),
             'need_verification' => Donation::where('status', 'pending')->count(),
@@ -23,7 +22,6 @@ class AdminController extends Controller
             'program_active'    => Program::count(),
         ];
 
-        // 2. Mengambil 5 Donasi Terbaru untuk Tabel Dashboard
         $recentDonations = Donation::with('program')
             ->orderBy('created_at', 'desc')
             ->limit(5)
@@ -48,7 +46,7 @@ class AdminController extends Controller
     }
 
     /**
-     * FUNGSI BARU: Menampilkan Detail Donasi Berdasarkan ID
+     * Menampilkan Detail Donasi Berdasarkan ID
      */
     public function showDonation($id)
     {
@@ -73,24 +71,25 @@ class AdminController extends Controller
     }
 
     /**
-     * FUNGSI BARU: Memproses Tombol Terima/Tolak (Update Status)
+     * FUNGSI DIPERBAIKI: Memproses Tombol Terima/Tolak
      */
     public function updateDonationStatus(Request $request, $id)
     {
-        $request->validate([
+        // Validasi status
+        $validated = $request->validate([
             'status' => 'required|in:paid,failed,pending'
         ]);
 
+        // Cari donasi berdasarkan ID
         $donation = Donation::findOrFail($id);
-        $donation->update([
-            'status' => $request->status
-        ]);
 
-        return redirect()->back()->with('message', 'Status donasi berhasil diperbarui');
+        // Update status
+        $donation->update(['status' => $validated['status']]);
+
+        // Return dengan data donasi terbaru dan flash message
+        return back()
+            ->with('success', 'Status donasi berhasil diperbarui menjadi ' . strtoupper($validated['status']));
     }
-
-    // --- Halaman Lainnya ---
-
     public function donations()
     {
         $donations = Donation::with('program')->latest()->paginate(10);

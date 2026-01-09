@@ -127,4 +127,23 @@ class DonationController extends Controller
             'donationData' => $donation->only(['name', 'email', 'phone', 'nominal', 'unique_code', 'invoice_no']),
         ]);
     }
+
+
+    public function accept($id)
+{
+    // 1. Cari data donasi berdasarkan ID
+    $donation = Donation::findOrFail($id);
+
+    // 2. Ubah status menjadi 'SUCCESS' (sesuaikan dengan nama kolom di DB Anda)
+    $donation->update([
+        'status' => 'success'
+    ]);
+
+    // 3. Kembali ke halaman sebelumnya dengan pesan sukses
+    return redirect()->back()->with('success', 'Donasi berhasil diterima!');
+}
+
+
+
+
 }

@@ -131,3 +131,6 @@ require __DIR__.'/auth.php';
 Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
 Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
 Route::get('/forgot-password', fn () => Inertia::render('Auth/ForgotPassword', ['status' => session('status')]))->name('password.request');
+
+
+
