@@ -1,17 +1,94 @@
-// Ganti import ini agar tidak error
+import React, { useState } from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { Search, Filter, Eye, Check, X } from 'lucide-react';
 
-export default function Donations() {
+export default function Donations({ pendingDonations = {}, paidDonations = {} }) {
+    const [tab, setTab] = useState('pending');
+    const [processingId, setProcessingId] = useState(null);
+
+    const handleUpdateStatus = (id, status) => {
+        if (!confirm(`Yakin ingin mengubah status menjadi ${status}?`)) return;
+        setProcessingId(id);
+        router.post(route('admin.donations.update-status', id), { status }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setProcessingId(null);
+                router.reload();
+            },
+            onError: () => setProcessingId(null),
+        });
+    };
+
+    const renderTable = (list, type) => {
+        if (!list || !list.data || list.data.length === 0) {
+            return (
+                <tr>
+                    <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                        <p className="text-sm">Tidak ada data.</p>
+                    </td>
+                </tr>
+            );
+        }
+
+        return list.data.map((donation) => (
+            <tr key={donation.id} className="hover:bg-gray-50 transition">
+                <td className="px-6 py-4 font-medium text-gray-800">{donation.invoice_no}</td>
+                <td className="px-6 py-4">
+                    <div className="font-bold text-gray-800">{donation.name}</div>
+                    <div className="text-xs text-gray-500">{donation.phone}</div>
+                </td>
+                <td className="px-6 py-4">
+                    <span className="text-gray-700">{donation.program?.title || '-'}</span>
+                </td>
+                <td className="px-6 py-4 font-bold text-green-600">
+                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(donation.nominal)}
+                </td>
+                <td className="px-6 py-4 text-gray-600 text-sm">{donation.date}</td>
+                <td className="px-6 py-4 text-center">
+                    {type === 'pending' ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <button
+                                onClick={() => handleUpdateStatus(donation.id, 'paid')}
+                                disabled={processingId === donation.id}
+                                className="p-2 bg-green-100 text-green-600 rounded hover:bg-green-200 disabled:opacity-50"
+                                title="Terima"
+                            >
+                                <Check size={16} />
+                            </button>
+                            <button
+                                onClick={() => handleUpdateStatus(donation.id, 'failed')}
+                                disabled={processingId === donation.id}
+                                className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 disabled:opacity-50"
+                                title="Tolak"
+                            >
+                                <X size={16} />
+                            </button>
+                            <Link href={route('admin.donations.show', donation.id)} className="text-gray-400 hover:text-gray-600">
+                                <Eye size={18} />
+                            </Link>
+                        </div>
+                    ) : (
+                        <Link
+                            href={route('admin.donations.show', donation.id)}
+                            className="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition font-medium text-xs"
+                        >
+                            <Eye size={16} /> Detail
+                        </Link>
+                    )}
+                </td>
+            </tr>
+        ));
+    };
+
     return (
         <AdminLayout>
             <Head title="Kelola Donasi" />
 
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Daftar Donasi Masuk</h2>
-                    <p className="text-gray-500 text-sm">Verifikasi transfer manual dan pantau donasi.</p>
+                    <h2 className="text-2xl font-bold text-gray-800">Daftar Donasi</h2>
+                    <p className="text-gray-500 text-sm">Verifikasi transfer manual dan arsip donasi terbayar.</p>
                 </div>
                 <div className="flex gap-2">
                     <div className="relative">
@@ -24,69 +101,35 @@ export default function Donations() {
                 </div>
             </div>
 
+            <div className="mb-4">
+                <div className="inline-flex rounded-lg bg-gray-100 p-1">
+                    <button onClick={() => setTab('pending')} className={`px-4 py-2 rounded-md ${tab==='pending' ? 'bg-white shadow' : 'text-gray-600'}`}>
+                        Donasi Masuk ({pendingDonations?.total ?? 0})
+                    </button>
+                    <button onClick={() => setTab('paid')} className={`px-4 py-2 rounded-md ${tab==='paid' ? 'bg-white shadow' : 'text-gray-600'}`}>
+                        Donasi Terbayar ({paidDonations?.total ?? 0})
+                    </button>
+                </div>
+            </div>
+
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <table className="w-full text-left text-sm">
                     <thead className="bg-green-50 text-green-800 uppercase font-bold text-xs">
                         <tr>
                             <th className="px-6 py-4">Invoice</th>
                             <th className="px-6 py-4">Donatur</th>
+                            <th className="px-6 py-4">Program</th>
                             <th className="px-6 py-4">Nominal + Kode</th>
-                            <th className="px-6 py-4">Metode</th>
-                            <th className="px-6 py-4">Bukti</th>
-                            <th className="px-6 py-4">Status</th>
+                            <th className="px-6 py-4">Tanggal</th>
                             <th className="px-6 py-4 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        <tr className="hover:bg-yellow-50/50 transition bg-yellow-50">
-                            <td className="px-6 py-4 font-medium">MM2025120607634</td>
-                            <td className="px-6 py-4">
-                                <div className="font-bold text-gray-800">Coco</div>
-                                <div className="text-xs text-gray-500">081234567890</div>
-                            </td>
-                            <td className="px-6 py-4 font-bold">
-                                Rp 50.<span className="text-red-500">002</span>
-                            </td>
-                            <td className="px-6 py-4">Transfer BTN</td>
-                            <td className="px-6 py-4">
-                                <span className="text-blue-600 underline cursor-pointer hover:text-blue-800">Lihat Bukti</span>
-                            </td>
-                            <td className="px-6 py-4">
-                                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-bold">
-                                    Verifikasi
-                                </span>
-                            </td>
-                            <td className="px-6 py-4 flex justify-center gap-2">
-                                <button className="p-2 bg-green-100 text-green-600 rounded hover:bg-green-200 tooltip" title="Terima">
-                                    <Check size={16} />
-                                </button>
-                                <button className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 tooltip" title="Tolak">
-                                    <X size={16} />
-                                </button>
-                            </td>
-                        </tr>
-                        <tr className="hover:bg-gray-50 transition">
-                            <td className="px-6 py-4 font-medium">MM2025120500123</td>
-                            <td className="px-6 py-4">
-                                <div className="font-bold text-gray-800">Hamba Allah</div>
-                            </td>
-                            <td className="px-6 py-4 font-bold">Rp 100.005</td>
-                            <td className="px-6 py-4">Transfer BCA</td>
-                            <td className="px-6 py-4 text-gray-400">-</td>
-                            <td className="px-6 py-4">
-                                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">
-                                    Berhasil
-                                </span>
-                            </td>
-                            <td className="px-6 py-4 text-center">
-                                <button className="text-gray-400 hover:text-gray-600">
-                                    <Eye size={18} />
-                                </button>
-                            </td>
-                        </tr>
+                        {tab === 'pending' ? renderTable(pendingDonations, 'pending') : renderTable(paidDonations, 'paid')}
                     </tbody>
                 </table>
             </div>
         </AdminLayout>
     );
 }
+

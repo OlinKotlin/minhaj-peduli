@@ -23,6 +23,7 @@ class AdminController extends Controller
         ];
 
         $recentDonations = Donation::with('program')
+            ->where('status', 'paid')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
@@ -51,6 +52,12 @@ class AdminController extends Controller
     public function showDonation($id)
     {
         $donation = Donation::with('program')->findOrFail($id);
+
+        // Hanya perbolehkan melihat detail jika status sudah paid
+        if ($donation->status !== 'paid') {
+            return redirect()->route('admin.donations')
+                ->with('error', 'Hanya donasi yang sudah terbayar yang dapat dilihat.');
+        }
 
         return Inertia::render('Admin/DonasiDetail', [
             'donation' => [
@@ -86,14 +93,55 @@ class AdminController extends Controller
         // Update status
         $donation->update(['status' => $validated['status']]);
 
-        // Return dengan data donasi terbaru dan flash message
-        return back()
-            ->with('success', 'Status donasi berhasil diperbarui menjadi ' . strtoupper($validated['status']));
+        // Jika menjadi paid, arahkan ke daftar donasi terbayar
+        if ($validated['status'] === 'paid') {
+            return redirect()->route('admin.donations')
+                ->with('success', 'Donasi telah ditandai sebagai PAID dan dimasukkan ke Daftar Donasi Masuk.');
+        }
+
+        // Kembali ke halaman sebelumnya untuk status selain paid
+        return back()->with('success', 'Status donasi berhasil diperbarui menjadi ' . strtoupper($validated['status']));
     }
     public function donations()
     {
-        $donations = Donation::with('program')->latest()->paginate(10);
-        return Inertia::render('Admin/Donations', ['donations' => $donations]);
+        // Daftar pending untuk verifikasi
+        $pending = Donation::with('program')
+            ->where('status', 'pending')
+            ->latest()
+            ->paginate(10)
+            ->through(function ($donation) {
+                return [
+                    'id'         => $donation->id,
+                    'invoice_no' => $donation->invoice_no,
+                    'name'       => $donation->name,
+                    'phone'      => $donation->phone,
+                    'nominal'    => $donation->nominal,
+                    'program'    => $donation->program,
+                    'date'       => $donation->created_at->format('d/m/Y'),
+                ];
+            });
+
+        // Daftar paid untuk arsip / detail
+        $paid = Donation::with('program')
+            ->where('status', 'paid')
+            ->latest()
+            ->paginate(10)
+            ->through(function ($donation) {
+                return [
+                    'id'         => $donation->id,
+                    'invoice_no' => $donation->invoice_no,
+                    'name'       => $donation->name,
+                    'phone'      => $donation->phone,
+                    'nominal'    => $donation->nominal,
+                    'program'    => $donation->program,
+                    'date'       => $donation->created_at->format('d/m/Y'),
+                ];
+            });
+
+        return Inertia::render('Admin/Donations', [
+            'pendingDonations' => $pending,
+            'paidDonations' => $paid,
+        ]);
     }
 
     public function programs() { return Inertia::render('Admin/Program'); }
