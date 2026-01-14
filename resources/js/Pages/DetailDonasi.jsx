@@ -1,7 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-// Perbaikan: Pastikan menggunakan 'lucide-react'
-import { MapPin, Phone, Mail, ArrowLeft, Check, X } from 'lucide-react';
-import { useState } from 'react';
+import { MapPin, Phone, Mail, ArrowLeft, Check, X, Share2, Copy, Facebook, Twitter, MessageCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 const formatRupiah = (number) => {
     const num = Number(number);
@@ -16,10 +15,19 @@ const formatRupiah = (number) => {
 export default function DetailDonasi({ auth, program, donation }) {
     const [nominal, setNominal] = useState('');
 
-    // 1. Inisialisasi useForm untuk pengiriman data
+    // State untuk Share Modal & Copy Link
+    const [isShareOpen, setIsShareOpen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const [currentUrl, setCurrentUrl] = useState('');
+
     const { post, processing } = useForm();
 
-    // 2. Fungsi Handler untuk Admin Update Status (Menggunakan Native Confirm)
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setCurrentUrl(window.location.href);
+        }
+    }, []);
+
     const handleUpdateStatus = (newStatus) => {
         const isPaid = newStatus === 'paid';
         const message = isPaid
@@ -27,7 +35,6 @@ export default function DetailDonasi({ auth, program, donation }) {
             : "Apakah Anda yakin ingin menolak donasi ini?";
 
         if (window.confirm(message)) {
-            // Menggunakan rute 'admin.donations.update-status' sesuai web.php
             post(route('admin.donations.update-status', donation.id), {
                 data: { status: newStatus },
                 preserveScroll: true,
@@ -50,7 +57,19 @@ export default function DetailDonasi({ auth, program, donation }) {
         }));
     };
 
-    // Data fallback agar tidak error jika data belum load
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(currentUrl);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+    };
+
+    const shareLinks = {
+        whatsapp: `https://api.whatsapp.com/send?text=Bantu ${program.title} yuk! Cek detailnya di sini: ${currentUrl}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+        twitter: `https://twitter.com/intent/tweet?url=${currentUrl}&text=Bantu ${program.title}`,
+        line: `https://social-plugins.line.me/lineit/share?url=${currentUrl}`
+    };
+
     const collected = formatRupiah(program.collected_amount || 0);
     const target = formatRupiah(program.target_amount || 0);
     const percentage = program.percentage || 0;
@@ -58,17 +77,109 @@ export default function DetailDonasi({ auth, program, donation }) {
     return (
         <>
             <Head title={program.title} />
+
+            {/* --- Modal Share Overlay --- */}
+            {isShareOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative scale-100 animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-gray-800">Bagikan lewat</h3>
+                            <button
+                                onClick={() => setIsShareOpen(false)}
+                                className="text-gray-400 hover:text-gray-600 transition"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-4 mb-8 text-center">
+                            {/* WhatsApp */}
+                            <a href={shareLinks.whatsapp} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                                <div className="w-14 h-14 bg-[#25D366] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
+                                    <MessageCircle size={28} fill="white" />
+                                </div>
+                                <span className="text-xs font-medium text-gray-600">WhatsApp</span>
+                            </a>
+                            {/* Facebook */}
+                            <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                                <div className="w-14 h-14 bg-[#1877F2] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
+                                    <Facebook size={28} fill="white" />
+                                </div>
+                                <span className="text-xs font-medium text-gray-600">Facebook</span>
+                            </a>
+                            {/* LINE */}
+                            <a href={shareLinks.line} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                                <div className="w-14 h-14 bg-[#06C755] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
+                                    <span className="font-bold text-xl">L</span>
+                                </div>
+                                <span className="text-xs font-medium text-gray-600">LINE</span>
+                            </a>
+                            {/* Twitter */}
+                            <a href={shareLinks.twitter} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
+                                <div className="w-14 h-14 bg-[#1DA1F2] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
+                                    <Twitter size={28} fill="white" />
+                                </div>
+                                <span className="text-xs font-medium text-gray-600">Twitter</span>
+                            </a>
+                        </div>
+
+                        <div className="flex items-center gap-2 border border-gray-200 rounded-lg p-2 bg-gray-50">
+                            <div className="flex-1 overflow-hidden">
+                                <p className="text-sm text-gray-500 truncate px-2">{currentUrl}</p>
+                            </div>
+                            <button
+                                onClick={handleCopyLink}
+                                className={`px-4 py-2 rounded-md text-sm font-bold transition flex items-center gap-2 ${isCopied ? 'bg-green-600 text-white' : 'bg-[#0ea5e9] text-white hover:bg-sky-600'}`}
+                            >
+                                {isCopied ? <Check size={16} /> : <Copy size={16} />}
+                                {isCopied ? 'Disalin' : 'Salin'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* --- Navbar --- */}
+                {/* --- Navbar (UPDATED) --- */}
                 <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
                     <div className="text-2xl font-bold text-green-700 italic">
                         Minhaj<span className="text-green-900">Peduli</span>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm font-semibold">
-                        <Link href="/" className="text-gray-600 hover:text-green-700 transition">Beranda</Link>
-                        <Link href={route('about')} className="text-gray-600 hover:text-green-700 transition">Tentang</Link>
-                        <Link href={route('donasi')} className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md">Donasi</Link>
+                    <div className="flex items-center space-x-3 text-sm font-semibold">
+                        {/* PERUBAHAN DISINI:
+                            - Default: Transparan (text-gray-600)
+                            - Hover: Background Putih & Text Hijau (hover:bg-white hover:text-green-700)
+                        */}
+                        <Link
+                            href="/"
+                            className="text-gray-600 hover:text-green-700 hover:bg-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-sm"
+                        >
+                            Beranda
+                        </Link>
+
+                        <Link
+                            href={route('about')}
+                            className="text-gray-600 hover:text-green-700 hover:bg-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-sm"
+                        >
+                            Tentang
+                        </Link>
+
+                        <Link
+                            href={route('laporan')}
+                            className="text-gray-600 hover:text-green-700 hover:bg-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-sm"
+                        >
+                            Laporan Keuangan
+                        </Link>
+
+                        {/* Tombol Donasi tetap Hijau Solid sebagai CTA Utama */}
+                        <Link
+                            href={route('donasi')}
+                            className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md border border-transparent"
+                        >
+                            Donasi
+                        </Link>
+
                         {auth?.user && (
                             <Link href={route('admin.dashboard')} className="ml-4 rounded-md border border-green-600 px-3 py-1 text-green-700 hover:bg-green-50">Dashboard</Link>
                         )}
@@ -76,7 +187,6 @@ export default function DetailDonasi({ auth, program, donation }) {
                 </nav>
 
                 <div className="max-w-6xl mx-auto px-6 py-10">
-                    {/* Tombol Kembali: Mengarah ke list admin jika mode admin, ke list donasi jika mode publik */}
                     <Link
                         href={donation ? route('admin.donations') : route('donasi')}
                         className="inline-flex items-center text-green-700 hover:text-green-900 font-semibold mb-6 transition"
@@ -127,7 +237,7 @@ export default function DetailDonasi({ auth, program, donation }) {
                                 </div>
 
                                 {donation ? (
-                                    /* --- MODE ADMIN: Validasi Pembayaran --- */
+                                    /* --- MODE ADMIN --- */
                                     <div className="space-y-3">
                                         <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Validasi Admin</p>
                                         <div className="mb-4 text-left p-3 bg-gray-50 rounded-lg border text-sm">
@@ -137,18 +247,10 @@ export default function DetailDonasi({ auth, program, donation }) {
 
                                         {donation.status === 'pending' ? (
                                             <>
-                                                <button
-                                                    onClick={() => handleUpdateStatus('paid')}
-                                                    disabled={processing}
-                                                    className="w-full py-3 bg-green-600 text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-green-700 transition disabled:opacity-50"
-                                                >
+                                                <button onClick={() => handleUpdateStatus('paid')} disabled={processing} className="w-full py-3 bg-green-600 text-white rounded-full font-bold flex items-center justify-center gap-2 hover:bg-green-700 transition disabled:opacity-50">
                                                     <Check size={20} /> Terima Donasi
                                                 </button>
-                                                <button
-                                                    onClick={() => handleUpdateStatus('failed')}
-                                                    disabled={processing}
-                                                    className="w-full py-3 bg-white text-red-600 border border-red-200 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-red-50 transition disabled:opacity-50"
-                                                >
+                                                <button onClick={() => handleUpdateStatus('failed')} disabled={processing} className="w-full py-3 bg-white text-red-600 border border-red-200 rounded-full font-bold flex items-center justify-center gap-2 hover:bg-red-50 transition disabled:opacity-50">
                                                     <X size={20} /> Tolak / Gagal
                                                 </button>
                                             </>
@@ -161,7 +263,7 @@ export default function DetailDonasi({ auth, program, donation }) {
                                         )}
                                     </div>
                                 ) : (
-                                    /* --- MODE USER: Form Input Donasi --- */
+                                    /* --- MODE USER --- */
                                     <>
                                         <div className="mb-4 text-left">
                                             <div className="relative">
@@ -183,6 +285,12 @@ export default function DetailDonasi({ auth, program, donation }) {
                                         >
                                             Donasi Sekarang
                                         </button>
+                                        <button
+                                            onClick={() => setIsShareOpen(true)}
+                                            className="block w-full mt-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 font-semibold py-3 px-4 rounded-full transition flex items-center justify-center gap-2"
+                                        >
+                                            <Share2 size={18} /> Bagikan
+                                        </button>
                                     </>
                                 )}
                             </div>
@@ -190,7 +298,7 @@ export default function DetailDonasi({ auth, program, donation }) {
                     </div>
                 </div>
 
-                {/* --- Footer --- */}
+                {/* --- Footer (Tetap sama) --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">

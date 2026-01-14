@@ -38,7 +38,7 @@ export default function Laporan({ auth }) {
                 <div>
                     <Navbar auth={auth} />
 
-                    {/* HEADER SECTION */}
+                    {/* HEADER SECTION (ANIMASI DIHAPUS DISINI) */}
                     <section className="pt-32 pb-16 px-6 bg-emerald-900 text-white text-center rounded-b-[3rem] shadow-xl relative z-20">
                         <h1 className="text-3xl md:text-4xl font-serif font-bold mb-3 tracking-wide">Transparansi Dana Umat</h1>
                         <p className="text-emerald-200 text-lg max-w-2xl mx-auto font-light">
@@ -46,24 +46,29 @@ export default function Laporan({ auth }) {
                         </p>
                     </section>
 
-                    {/* KONTEN UTAMA */}
+                    {/* KONTEN UTAMA (ANIMASI WRAPPER DIHAPUS DISINI) */}
                     <div className="max-w-6xl mx-auto px-6 -mt-10 relative z-30 pb-20">
 
-                        {/* KARTU RINGKASAN */}
+                        {/* KARTU RINGKASAN (HANYA BAGIAN INI YANG DI-ANIMASI) */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                             {[
                                 { label: "Total Pemasukan", val: summary.total_masuk, color: "text-emerald-600", border: "border-emerald-500", bg: "bg-white" },
                                 { label: "Total Pengeluaran", val: summary.total_keluar, color: "text-red-600", border: "border-red-500", bg: "bg-white" },
                                 { label: "Saldo Saat Ini", val: summary.saldo_akhir, color: "text-blue-600", border: "border-blue-500", bg: "bg-white shadow-md" }
                             ].map((item, idx) => (
-                                <div key={idx} className={`${item.bg} p-6 rounded-2xl shadow-lg border-t-4 ${item.border} flex flex-col justify-center items-center text-center transform hover:-translate-y-1 transition duration-300`}>
+                                // Tambahkan class animate-fade-in-up dan style delay disini
+                                <div
+                                    key={idx}
+                                    className={`${item.bg} p-6 rounded-2xl shadow-lg border-t-4 ${item.border} flex flex-col justify-center items-center text-center transform hover:-translate-y-1 transition duration-300 animate-fade-in-up`}
+                                    style={{ animationDelay: `${idx * 0.15}s`, animationFillMode: 'both' }} // Delay bertingkat agar muncul bergantian
+                                >
                                     <div className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-2">{item.label}</div>
                                     <div className={`text-2xl md:text-3xl font-bold ${item.color}`}>{formatRupiah(item.val)}</div>
                                 </div>
                             ))}
                         </div>
 
-                        {/* TABEL MUTASI */}
+                        {/* TABEL MUTASI (TIDAK DI-ANIMASI) */}
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
                             <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50">
                                 <div className="flex items-center gap-3">
@@ -116,16 +121,9 @@ export default function Laporan({ auth }) {
                     </div>
                 </div>
 
-                {/* --- FOOTER ASLI DENGAN GRADASI ATAS --- */}
-                {/* 1. 'relative': Agar bisa menampung elemen absolut gradasi.
-                    2. 'mt-10': Memberi jarak dari konten di atasnya.
-                */}
+                {/* --- FOOTER ASLI --- */}
                 <footer className="w-full mt-10 relative">
-
-                    {/* --- EFEK GRADASI DI ATAS FOOTER --- */}
-                    {/* Div ini memberikan efek bayangan/gradasi transparan di bagian paling atas footer */}
                     <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-black/5 to-transparent pointer-events-none"></div>
-
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
                             <div className="flex flex-col justify-start md:w-1/3">
@@ -138,42 +136,26 @@ export default function Laporan({ auth }) {
                             </div>
                             <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
                                 <div>
-                                    <h3 className="text-xl font-bold mb-4 text-green-900">
-                                        Alamat
-                                    </h3>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-start">
                                             <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0" />
                                             <span className="text-green-800 leading-relaxed">
-                                                Desa kuripan Kel.Kuripan
-                                                <br />
-                                                Kec. Ciseeng, Bogor, Jawa Barat
+                                                Desa kuripan Kel.Kuripan<br />Kec. Ciseeng, Bogor, Jawa Barat
                                             </span>
                                         </li>
                                     </ul>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold mb-4 text-green-900">
-                                        Kontak kami
-                                    </h3>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">Kontak kami</h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-center">
                                             <Mail className="w-6 h-6 text-green-700 mr-3" />
-                                            <a
-                                                href="mailto:AlMinhaj@gmail.com"
-                                                className="text-green-800 hover:text-green-600 transition"
-                                            >
-                                                AlMinhaj@gmail.com
-                                            </a>
+                                            <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a>
                                         </li>
                                         <li className="flex items-center">
                                             <Phone className="w-6 h-6 text-green-700 mr-3" />
-                                            <a
-                                                href="tel:081234567890"
-                                                className="text-green-800 hover:text-green-600 transition"
-                                            >
-                                                081234567890
-                                            </a>
+                                            <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">081234567890</a>
                                         </li>
                                     </ul>
                                 </div>
@@ -182,11 +164,21 @@ export default function Laporan({ auth }) {
                     </div>
                     <div className="bg-white py-4 text-center border-t border-green-200">
                         <p className="text-sm text-gray-700 font-medium flex items-center justify-center">
-                            <span className="text-lg mr-1">©</span> 2025 MINHAJ
-                            PEDULI. ALL RIGHTS RESERVED.
+                            <span className="text-lg mr-1">©</span> 2025 MINHAJ PEDULI. ALL RIGHTS RESERVED.
                         </p>
                     </div>
                 </footer>
+
+                {/* --- Style untuk Animasi (Tetap dibutuhkan) --- */}
+                <style>{`
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(30px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    .animate-fade-in-up {
+                        animation: fadeInUp 0.8s ease-out forwards;
+                    }
+                `}</style>
             </div>
         </>
     );
