@@ -1,15 +1,30 @@
 import AdminLayout from '../../Layouts/AdminLayout';
-import { Head } from '@inertiajs/react';
-import { Plus, Edit, Trash2, Search, Filter } from 'lucide-react';
+import { Head, useForm } from '@inertiajs/react';
+import { Plus, Edit, Trash2, Search, Filter, X } from 'lucide-react';
+import { useState } from 'react';
 
-export default function Program() {
-    // Data Dummy Program
-    const programs = [
-        { id: 1, title: 'Pembangunan Asrama Santri', target: 'Rp 50.000.000', collected: 'Rp 30.000.000', progress: 60, status: 'Aktif', image: '/images/pesantren1.png' },
-        { id: 2, title: 'Pembangunan Pesantren Tahfidz', target: 'Rp 20.000.000', collected: 'Rp 12.000.000', progress: 60, status: 'Aktif', image: '/images/pesantren2.png' },
-        { id: 3, title: 'Wakaf AL-Quran dan Buku', target: 'Rp 50.000.000', collected: 'Rp 15.000.000', progress: 30, status: 'Selesai', image: '/images/pesantren1.png' },
-        { id: 4, title: 'Pembangunan Masjid', target: 'Rp 10.000.000', collected: 'Rp 8.000.000', progress: 80, status: 'Aktif', image: '/images/pesantren2.png' },
-    ];
+export default function Program({ programs }) {
+    // State untuk mengontrol Modal
+    const [showModal, setShowModal] = useState(false);
+
+    // Inisialisasi Form Inertia
+    const { data, setData, post, processing, reset, errors } = useForm({
+        title: '',
+        target_amount: '',
+        image: null,
+        description: '',
+    });
+
+    // Fungsi Submit
+    const submit = (e) => {
+        e.preventDefault();
+        post(route('admin.programs.store'), {
+            onSuccess: () => {
+                setShowModal(false);
+                reset();
+            },
+        });
+    };
 
     return (
         <AdminLayout>
@@ -21,7 +36,11 @@ export default function Program() {
                     <h2 className="text-2xl font-bold text-gray-800">Daftar Program Donasi</h2>
                     <p className="text-gray-500 text-sm">Kelola kampanye donasi yang sedang berjalan.</p>
                 </div>
-                <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-md transition flex items-center gap-2">
+                {/* MODIFIKASI: Menambahkan fungsi onClick untuk buka modal */}
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg font-medium shadow-md transition flex items-center gap-2"
+                >
                     <Plus size={18} /> Tambah Program
                 </button>
             </div>
@@ -41,7 +60,7 @@ export default function Program() {
                 </button>
             </div>
 
-            {/* Grid Program */}
+            {/* Grid Program (Kode asli Anda tetap dipertahankan) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {programs.map((item) => (
                     <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition duration-300 group">
@@ -64,13 +83,13 @@ export default function Program() {
                                 <div>
                                     <div className="flex justify-between text-sm mb-1">
                                         <span className="text-gray-500">Terkumpul</span>
-                                        <span className="font-bold text-green-700">{item.collected}</span>
+                                        <span className="font-bold text-green-700">{item.collected_formatted}</span>
                                     </div>
                                     <div className="w-full bg-gray-100 rounded-full h-2.5">
                                         <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${item.progress}%` }}></div>
                                     </div>
                                     <div className="flex justify-between text-xs text-gray-400 mt-1">
-                                        <span>Target: {item.target}</span>
+                                        <span>Target: {item.target_formatted}</span>
                                         <span>{item.progress}%</span>
                                     </div>
                                 </div>
@@ -78,9 +97,12 @@ export default function Program() {
 
                             {/* Tombol Aksi */}
                             <div className="mt-auto flex gap-3 pt-4 border-t border-gray-100">
-                                <button className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 hover:text-green-700 font-medium transition">
+                                <a
+                                    href={route('admin.donasi.edit', item.id)}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 hover:text-green-700 font-medium transition"
+                                >
                                     <Edit size={16} /> Edit
-                                </button>
+                                </a>
                                 <button className="flex-none p-2.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition tooltip" title="Hapus Program">
                                     <Trash2 size={18} />
                                 </button>
@@ -89,6 +111,83 @@ export default function Program() {
                     </div>
                 ))}
             </div>
+
+            {/* MODAL FORM TAMBAH PROGRAM */}
+            {showModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="flex justify-between items-center p-6 border-b">
+                            <h3 className="text-xl font-bold text-gray-800">Tambah Program Baru</h3>
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 transition">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={submit} className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Program</label>
+                                <input
+                                    type="text"
+                                    placeholder="Contoh: Pembangunan Masjid"
+                                    className={`w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 ${errors.title ? 'border-red-500' : ''}`}
+                                    value={data.title}
+                                    onChange={e => setData('title', e.target.value)}
+                                />
+                                {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Target Dana (Rp)</label>
+                                <input
+                                    type="number"
+                                    placeholder="Masukkan angka saja"
+                                    className={`w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 ${errors.target_amount ? 'border-red-500' : ''}`}
+                                    value={data.target_amount}
+                                    onChange={e => setData('target_amount', e.target.value)}
+                                />
+                                {errors.target_amount && <p className="text-red-500 text-xs mt-1">{errors.target_amount}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Program</label>
+                                <input
+                                    type="file"
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                                    onChange={e => setData('image', e.target.files[0])}
+                                />
+                                {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1 text-sm">Deskripsi Singkat</label>
+                                <textarea
+                                    rows="3"
+                                    className="w-full border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 text-sm"
+                                    value={data.description}
+                                    onChange={e => setData('description', e.target.value)}
+                                ></textarea>
+                            </div>
+
+                            <div className="flex justify-end gap-3 mt-6">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium shadow-md transition disabled:opacity-50"
+                                >
+                                    {processing ? 'Menyimpan...' : 'Simpan Program'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

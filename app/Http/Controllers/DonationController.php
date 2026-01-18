@@ -130,20 +130,59 @@ class DonationController extends Controller
 
 
     public function accept($id)
-{
-    // 1. Cari data donasi berdasarkan ID
-    $donation = Donation::findOrFail($id);
+    {
+        // 1. Cari data donasi berdasarkan ID
+        $donation = Donation::findOrFail($id);
 
-    // 2. Ubah status menjadi 'SUCCESS' (sesuaikan dengan nama kolom di DB Anda)
-    $donation->update([
-        'status' => 'success'
-    ]);
+        // 2. Ubah status menjadi 'SUCCESS' (sesuaikan dengan nama kolom di DB Anda)
+        $donation->update([
+            'status' => 'success'
+        ]);
 
-    // 3. Kembali ke halaman sebelumnya dengan pesan sukses
-    return redirect()->back()->with('success', 'Donasi berhasil diterima!');
-}
+        // 3. Kembali ke halaman sebelumnya dengan pesan sukses
+        return redirect()->back()->with('success', 'Donasi berhasil diterima!');
+    }
 
+    /** * KODE BARU TAMBAHAN
+     */
 
+    public function update(Request $request, $id)
+    {
+        $program = Program::findOrFail($id);
 
+        $request->validate([
+            'target_amount' => 'required|numeric',
+            'image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
 
+        $program->target_amount = $request->target_amount;
+
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($program->image_path && file_exists(public_path($program->image_path))) {
+                unlink(public_path($program->image_path));
+            }
+
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images/programs'), $imageName);
+            $program->image_path = '/images/programs/' . $imageName;
+        }
+
+        $program->save();
+        return redirect()->back()->with('success', 'Program berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        $program = Program::findOrFail($id);
+
+        // Hapus file gambar dari server
+        if ($program->image_path && file_exists(public_path($program->image_path))) {
+            unlink(public_path($program->image_path));
+        }
+
+        $program->delete();
+
+        return redirect()->route('donasi')->with('success', 'Program berhasil dihapus');
+    }
 }

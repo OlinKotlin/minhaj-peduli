@@ -48,13 +48,18 @@ export default function AdminLayout({ children }) {
                     })}
                 </nav>
 
-                {/* Footer Sidebar (Logout) */}
-                <div className={`p-4 border-t border-green-800 ${!sidebarOpen && 'flex justify-center'}`}>
-                    <button className={`flex items-center gap-3 px-4 py-3 rounded-lg w-full transition-colors text-red-100 hover:bg-red-800 ${!sidebarOpen && 'w-auto'}`}>
-                        <LogOut size={20} />
-                        <span className={`${!sidebarOpen && 'hidden'} font-medium`}>Logout</span>
-                    </button>
-                </div>
+              {/* Footer Sidebar (Logout) */}
+                            <div className={`p-4 border-t border-green-800 ${!sidebarOpen && 'flex justify-center'}`}>
+                                <Link
+                                    href={route('admin.logout')}
+                                    method="post"
+                                    as="button"
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg w-full transition-colors text-red-100 hover:bg-red-800 ${!sidebarOpen && 'w-auto'}`}
+                                >
+                                    <LogOut size={20} />
+                                    <span className={`${!sidebarOpen && 'hidden'} font-medium`}>Logout</span>
+                                </Link>
+                            </div>
 
             </aside>
 

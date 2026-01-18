@@ -108,16 +108,39 @@ Route::prefix('admin')->group(function () {
 // GROUP ADMIN (Membutuhkan Login)
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->group(function () {
 
+    // --- RUTE EDIT, UPDATE & HAPUS PROGRAM (DITAMBAHKAN) ---
+    Route::get('/programs/{id}/edit', [AdminController::class, 'editProgram'])->name('donasi.edit');
+    Route::put('/programs/{id}', [AdminController::class, 'updateProgram'])->name('programs.update');
+    Route::delete('/programs/{id}', [AdminController::class, 'destroyProgram'])->name('donasi.destroy');
+    // ----------------------------------------------
+
     // Dashboard & Menu Utama
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
 
-    // --- [MODIFIKASI: PENAMBAHAN FITUR DETAIL DONASI] ---
+    // --- [MODIFIKASI: PENAMBAHAN FITUR DETAIL DONASI & EXPORT] ---
+
+    // Rute untuk ekspor donasi ke CSV
+    Route::get('/donations/export', [AdminController::class, 'exportDonations'])->name('donations.export');
+
     // 1. Rute untuk melihat detail donasi berdasarkan ID
     Route::get('/donations/{id}', [AdminController::class, 'showDonation'])->name('donations.show');
 
     // 2. Rute untuk memproses tombol Terima/Tolak (Update Status)
     Route::post('/donations/{id}/update-status', [AdminController::class, 'updateDonationStatus'])->name('donations.update-status');
+
+    // 3. Rute untuk mengoreksi nominal donasi (Fitur Baru)
+    Route::post('/donations/{id}/update-nominal', [AdminController::class, 'updateNominal'])->name('donations.update-nominal');
+
+    // 4. Rute untuk Update Profil Admin (Fitur Baru dari Settings)
+    Route::put('/settings/profile', [AdminController::class, 'updateProfile'])->name('settings.update-profile');
+
+    // 5. Rute untuk Update Password Admin (Fitur Baru)
+    Route::put('/settings/password', [AdminController::class, 'updatePassword'])->name('settings.update-password');
+
+    // 6. Rute untuk Tambah Program Baru (Fitur Baru)
+    Route::post('/programs', [AdminController::class, 'storeProgram'])->name('programs.store');
+
     // ----------------------------------------------------
 
     Route::get('/programs', [AdminController::class, 'programs'])->name('programs');
@@ -131,6 +154,3 @@ require __DIR__.'/auth.php';
 Route::get('/login', fn () => Inertia::render('Auth/Login'))->name('login');
 Route::get('/register', fn () => Inertia::render('Auth/Register'))->name('register');
 Route::get('/forgot-password', fn () => Inertia::render('Auth/ForgotPassword', ['status' => session('status')]))->name('password.request');
-
-
-

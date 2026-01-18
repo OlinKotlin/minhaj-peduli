@@ -15,6 +15,8 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
+        'phone', // Tambahkan ini
+        'image', // Tambahkan ini
     ];
 
     /**

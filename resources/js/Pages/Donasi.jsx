@@ -1,6 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import Navbar from "@/Components/Navbar";
-import { Search, MapPin, Phone, Mail, ArrowRight } from 'lucide-react'; 
+import { Search, MapPin, Phone, Mail, ArrowRight, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 // Fungsi helper format Rupiah
@@ -17,6 +17,16 @@ const formatRupiah = (number) => {
 
 export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
     const [searchTerm, setSearchTerm] = useState('');
+    const [showAll, setShowAll] = useState(false); // State untuk kontrol tampilan "Lihat Semua"
+
+    // --- LOGIKA HAPUS ---
+    const { delete: destroy } = useForm();
+
+    const handleDelete = (id) => {
+        if (confirm("Apakah Anda yakin ingin menghapus program ini?")) {
+            destroy(route('donasi.destroy', id));
+        }
+    };
 
     // --- Stats Data Dinamis ---
     const totalCollected = totalStats.collected_amount || 0;
@@ -39,13 +49,13 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
         img: prog.image_path || '/images/default.png',
     }));
 
-    // Filter Program
+    // Filter Program berdasarkan pencarian
     let filteredPrograms = programsData.filter(program =>
         program.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Batasi 4 jika tidak mencari
-    if (searchTerm === '') {
+    // LOGIKA LIMIT: Batasi 4 jika tidak mencari DAN tidak sedang klik "Lihat Semua"
+    if (searchTerm === '' && !showAll) {
         filteredPrograms = filteredPrograms.slice(0, 4);
     }
 
@@ -57,10 +67,9 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
 
                 <Navbar auth={auth} />
 
-                {/* --- Hero Section (Animasi Slow Zoom & Fade Up) --- */}
+                {/* --- Hero Section --- */}
                 <section className="relative h-[500px] flex items-center justify-center text-center px-4 overflow-hidden group">
                     <div className="absolute inset-0 z-0">
-                        {/* Gambar Background Bergerak Pelan */}
                         <img
                             src="/images/pesantren1.png"
                             alt="Construction Site"
@@ -69,7 +78,6 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                         <div className="absolute inset-0 bg-black/60"></div>
                     </div>
 
-                    {/* Konten Text Muncul dari Bawah */}
                     <div className="relative z-10 max-w-4xl mx-auto text-white animate-fade-in-up">
                         <h1 className="text-4xl md:text-6xl font-bold uppercase mb-4 tracking-wide drop-shadow-lg">
                             DONASI
@@ -89,7 +97,7 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                     </div>
                 </section>
 
-                {/* --- Stats Boxes (Hover Levitate & Scale) --- */}
+                {/* --- Stats Boxes --- */}
                 <section className="relative z-20 px-4 -mt-16 mb-12">
                     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                         {statsData.map((item, idx) => (
@@ -104,10 +112,9 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                     </div>
                 </section>
 
-                {/* --- Quote Banner (Parallax Feel) --- */}
+                {/* --- Quote Banner --- */}
                 <section className="relative h-64 flex items-center justify-center mb-12 overflow-hidden">
                     <div className="absolute inset-0 z-0">
-                        {/* bg-fixed membuat efek parallax sederhana */}
                         <img src="/images/pesantren2.png" alt="Quote Background" className="w-full h-full object-cover fixed-bg" />
                         <div className="absolute inset-0 bg-black/50"></div>
                     </div>
@@ -147,7 +154,6 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                                             alt={prog.title}
                                             className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                                         />
-                                        {/* Overlay saat hover */}
                                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                     </div>
 
@@ -159,13 +165,30 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                                                 <span>Target: {prog.target}</span>
                                             </div>
 
-                                            {/* Progress Bar Shimmer */}
                                             <div className="w-full bg-gray-200 rounded-full h-3 mb-6 relative overflow-hidden">
                                                 <div className="bg-green-500 h-full rounded-full relative" style={{ width: `${prog.pct}%` }}>
-                                                    {/* Shimmer Effect */}
                                                     <div className="absolute top-0 left-0 bottom-0 right-0 bg-gradient-to-r from-transparent via-white/40 to-transparent w-full -translate-x-full animate-shimmer"></div>
                                                 </div>
                                             </div>
+
+                                            {/* --- PERBAIKAN DI SINI: Optional Chaining auth?.user --- */}
+                                            {auth?.user && (
+                                                <div className="flex gap-2 mb-6 border-t pt-4">
+                                                    <Link
+                                                        href={route('donasi.edit', prog.id)}
+                                                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-center py-2 rounded-md text-xs font-semibold transition shadow-sm"
+                                                    >
+                                                        Edit Program
+                                                    </Link>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDelete(prog.id)}
+                                                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-md text-xs font-semibold transition shadow-sm"
+                                                    >
+                                                        Hapus
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div className="flex justify-end">
@@ -186,15 +209,16 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                         )}
                     </div>
 
-                    {/* Tombol Lihat Semua */}
-                    {programCount > 4 && searchTerm === '' && (
+                    {/* TOMBOL LIHAT SEMUA */}
+                    {programCount > 4 && searchTerm === '' && !showAll && (
                         <div className="text-center mt-12">
-                            <Link
-                                href={route('donasi')}
+                            <button
+                                type="button"
+                                onClick={() => setShowAll(true)}
                                 className="inline-block bg-white text-green-700 border-2 border-green-600 px-8 py-3 rounded-full hover:bg-green-600 hover:text-white transition-all duration-300 shadow-lg font-semibold hover:-translate-y-1"
                             >
                                 Lihat Semua Program ({programCount})
-                            </Link>
+                            </button>
                         </div>
                     )}
                 </section>
@@ -242,7 +266,6 @@ export default function Donasi({ auth, allPrograms = [], totalStats = {} }) {
                     </div>
                 </footer>
 
-                {/* --- Style untuk Animasi --- */}
                 <style>{`
                     @keyframes fadeInUp {
                         from { opacity: 0; transform: translateY(30px); }
