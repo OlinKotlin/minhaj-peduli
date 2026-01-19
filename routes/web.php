@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     $programs = Program::with('donations')
         ->orderBy('id', 'asc')
-        ->limit(4)
         ->get()
         ->map(function ($program) {
             $collected_amount = $program->donations->where('status', 'paid')->sum('nominal');
@@ -36,7 +35,7 @@ Route::get('/', function () {
                 'target_amount' => $target_amount,
                 'collected_amount' => $collected_amount,
                 'percentage' => $percentage,
-                'image_path' => $program->image_path ?? '/images/default.png',
+                'image_path' => $program->image_path ? asset('storage/' . ltrim($program->image_path, '/')) : asset('images/default.png'),
             ];
         });
 
@@ -82,12 +81,12 @@ Route::post('/donasi/{id}/store', [DonationController::class, 'storeDonation'])-
 
 Route::get('/donasi/{id}/pembayaran', [DonationController::class, 'paymentForm'])->name('donasi.pembayaran');
 
-Route::get('/donasi/{id}/konfirmasi', function ($id) {
-    return Inertia::render('KonfirmasiPembayaran', [
-        'id' => $id,
-        'data' => request()->all()
-    ]);
-})->name('donasi.konfirmasi');
+// Route GET untuk menampilkan halaman form konfirmasi
+Route::get('/donasi/{id}/konfirmasi', [DonationController::class, 'paymentForm'])->name('donasi.konfirmasi');
+
+// Route POST untuk memproses data konfirmasi (Submit Bukti Pembayaran)
+Route::post('/donasi/konfirmasi-proses', [DonationController::class, 'confirm'])
+    ->name('donasi.confirm');
 
 // Rute Detail Donasi (Public)
 Route::get('/donasi/{id}', [DonationController::class, 'show'])->name('donasi.show');
@@ -103,49 +102,43 @@ Route::prefix('admin')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'createAdmin'])->name('admin.login');
     Route::post('/login', [AuthenticatedSessionController::class, 'storeAdmin'])->name('admin.login.post');
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroyAdmin'])->name('admin.logout');
+
+    Route::get('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetLinkController::class, 'createAdmin'])->name('admin.password.request');
+    Route::post('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetLinkController::class, 'storeAdmin'])->name('admin.password.email');
+    Route::get('/reset-password/{token}', [\App\Http\Controllers\Auth\NewPasswordController::class, 'createAdmin'])->name('admin.password.reset');
+    Route::post('/reset-password', [\App\Http\Controllers\Auth\NewPasswordController::class, 'storeAdmin'])->name('admin.password.update');
 });
 
 // GROUP ADMIN (Membutuhkan Login)
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->group(function () {
 
-    // --- RUTE EDIT, UPDATE & HAPUS PROGRAM (DITAMBAHKAN) ---
+    // --- RUTE PROGRAM ---
     Route::get('/programs/{id}/edit', [AdminController::class, 'editProgram'])->name('donasi.edit');
     Route::put('/programs/{id}', [AdminController::class, 'updateProgram'])->name('programs.update');
     Route::delete('/programs/{id}', [AdminController::class, 'destroyProgram'])->name('donasi.destroy');
-    // ----------------------------------------------
+    Route::post('/programs', [AdminController::class, 'storeProgram'])->name('programs.store');
+    Route::get('/programs', [AdminController::class, 'programs'])->name('programs');
 
-    // Dashboard & Menu Utama
+    // --- DASHBOARD & DONATIONS ---
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/donations', [AdminController::class, 'donations'])->name('donations');
-
-    // --- [MODIFIKASI: PENAMBAHAN FITUR DETAIL DONASI & EXPORT] ---
-
-    // Rute untuk ekspor donasi ke CSV
     Route::get('/donations/export', [AdminController::class, 'exportDonations'])->name('donations.export');
 
-    // 1. Rute untuk melihat detail donasi berdasarkan ID
-    Route::get('/donations/{id}', [AdminController::class, 'showDonation'])->name('donations.show');
+    // 1. Rute Detail Donasi
+    Route::get('/donations/{id}', [DonationController::class, 'showDonation'])->name('donations.show');
 
-    // 2. Rute untuk memproses tombol Terima/Tolak (Update Status)
+    // 2. Update Status & Nominal
     Route::post('/donations/{id}/update-status', [AdminController::class, 'updateDonationStatus'])->name('donations.update-status');
-
-    // 3. Rute untuk mengoreksi nominal donasi (Fitur Baru)
     Route::post('/donations/{id}/update-nominal', [AdminController::class, 'updateNominal'])->name('donations.update-nominal');
 
-    // 4. Rute untuk Update Profil Admin (Fitur Baru dari Settings)
-    Route::put('/settings/profile', [AdminController::class, 'updateProfile'])->name('settings.update-profile');
+    // 3. Update Bukti Pembayaran
+    Route::put('/donations/{id}/update-proof', [DonationController::class, 'updateProof'])->name('donations.update-proof');
 
-    // 5. Rute untuk Update Password Admin (Fitur Baru)
-    Route::put('/settings/password', [AdminController::class, 'updatePassword'])->name('settings.update-password');
-
-    // 6. Rute untuk Tambah Program Baru (Fitur Baru)
-    Route::post('/programs', [AdminController::class, 'storeProgram'])->name('programs.store');
-
-    // ----------------------------------------------------
-
-    Route::get('/programs', [AdminController::class, 'programs'])->name('programs');
+    // --- SETTINGS & DONATUR ---
     Route::get('/donatur', [AdminController::class, 'donatur'])->name('donatur');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::put('/settings/profile', [AdminController::class, 'updateProfile'])->name('settings.update-profile');
+    Route::put('/settings/password', [AdminController::class, 'updatePassword'])->name('settings.update-password');
 });
 
 // Auth Routes (Login/Register User Biasa)

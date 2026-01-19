@@ -2,10 +2,31 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Check, X, Calendar, User, CreditCard, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Check, X, Calendar, User, CreditCard, MessageCircle, Upload, Eye } from 'lucide-react';
 
 export default function DonasiDetail({ donation }) {
     const [isProcessing, setIsProcessing] = useState(false);
+
+    // --- LOGIKA TAMBAHAN UNTUK UPLOAD GAMBAR ---
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setIsProcessing(true);
+            router.post(route('admin.donations.update-proof', donation.id), {
+                _method: 'PUT',
+                proof_image: file,
+            }, {
+                forceFormData: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsProcessing(false);
+                    alert('Bukti pembayaran berhasil diperbarui');
+                },
+                onError: () => setIsProcessing(false),
+            });
+        }
+    };
+    // ------------------------------------------
 
     const statusBadgeClass = donation.status === 'paid'
         ? 'bg-green-100 text-green-700'
@@ -102,6 +123,49 @@ export default function DonasiDetail({ donation }) {
                             <p className="text-xs text-blue-400 font-bold mb-1 uppercase">Pesan / Doa:</p>
                             <p className="text-sm text-blue-700 font-medium italic">" {donation.notes || 'Tidak ada pesan doa.'} "</p>
                         </div>
+
+                        {/* --- BAGIAN UI BUKTI PEMBAYARAN (GABUNGAN) --- */}
+                        <div className="mt-6 p-6 border rounded-2xl bg-gray-50">
+                            <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2">
+                                <Upload size={16} className="text-gray-400" /> Bukti Pembayaran
+                            </h3>
+
+                            {donation.proof_image ? (
+                                <div className="space-y-4">
+                                    <p className="text-xs text-gray-500">Donatur telah mengunggah bukti berikut:</p>
+                                    <div className="relative group w-full max-w-xs overflow-hidden rounded-xl shadow-md border bg-white">
+                                        <a href={donation.proof_image} target="_blank" rel="noopener noreferrer">
+                                            <img
+                                                src={donation.proof_image}
+                                                alt="Bukti Bayar"
+                                                className="w-full h-auto cursor-pointer hover:scale-105 transition duration-300"
+                                            />
+                                        </a>
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center pointer-events-none">
+                                            <Eye className="text-white" size={24} />
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-400 italic">*Klik gambar untuk memperbesar</p>
+
+                                    <div>
+                                        <label className="inline-flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-lg cursor-pointer hover:bg-blue-100 transition">
+                                            <Upload size={14} /> Ganti Bukti Pembayaran
+                                            <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" disabled={isProcessing} />
+                                        </label>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 bg-white">
+                                    <Upload size={32} className="mb-2 opacity-20" />
+                                    <p className="text-sm mb-4">Donatur belum mengunggah bukti pembayaran.</p>
+                                    <label className="px-5 py-2.5 bg-green-600 text-white rounded-xl text-xs font-bold cursor-pointer hover:bg-green-700 transition shadow-sm">
+                                        Unggah Bukti Sekarang
+                                        <input type="file" className="hidden" onChange={handleImageUpload} accept="image/*" disabled={isProcessing} />
+                                    </label>
+                                </div>
+                            )}
+                        </div>
+                        {/* -------------------------------------------- */}
                     </div>
                 </div>
 

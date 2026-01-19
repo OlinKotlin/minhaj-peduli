@@ -1,4 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
+import ProgressBar from '../Components/ProgressBar';
 import { MapPin, Phone, Mail, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
@@ -95,26 +96,7 @@ function FormDonasi({ auth, id, nominal, errors }) { // Tambahkan 'errors' untuk
 
                 <div className="max-w-5xl mx-auto px-6 py-10">
 
-                    {/* --- Stepper (Tidak Berubah) --- */}
-                    <div className="flex justify-center items-center mb-12">
-                        {/* Step 1: Active */}
-                        <div className="flex flex-col items-center relative z-10">
-                            <div className="text-sm font-bold text-gray-700 mb-2">Formulir Donasi</div>
-                            <div className="w-10 h-10 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold shadow-md ring-4 ring-green-100">1</div>
-                        </div>
-                        <div className="h-1 w-24 md:w-48 bg-gray-200 -mx-4 mt-6"></div>
-                        {/* Step 2 */}
-                        <div className="flex flex-col items-center relative z-10">
-                            <div className="text-sm font-bold text-gray-400 mb-2">Pembayaran</div>
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">2</div>
-                        </div>
-                        <div className="h-1 w-24 md:w-48 bg-gray-200 -mx-4 mt-6"></div>
-                        {/* Step 3 */}
-                        <div className="flex flex-col items-center relative z-10">
-                            <div className="text-sm font-bold text-gray-400 mb-2">Selesai</div>
-                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold">3</div>
-                        </div>
-                    </div>
+                    <ProgressBar step={1} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                         {/* --- KIRI: Form Input --- */}

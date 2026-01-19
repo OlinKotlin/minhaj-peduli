@@ -28,6 +28,17 @@ class NewPasswordController extends Controller
     }
 
     /**
+     * Display the password reset view for Admin guard.
+     */
+    public function createAdmin(Request $request): Response
+    {
+        return Inertia::render('Admin/ResetPassword', [
+            'email' => $request->email,
+            'token' => $request->route('token'),
+        ]);
+    }
+
+    /**
      * Handle an incoming new password request.
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -60,6 +71,38 @@ class NewPasswordController extends Controller
         // redirect them back to where they came from with their error message.
         if ($status == Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('status', __($status));
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [trans($status)],
+        ]);
+    }
+
+    /**
+     * Handle a new password request for Admin guard.
+     */
+    public function storeAdmin(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $status = Password::broker('admins')->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status == Password::PASSWORD_RESET) {
+            return redirect()->route('admin.dashboard')->with('status', __($status));
         }
 
         throw ValidationException::withMessages([

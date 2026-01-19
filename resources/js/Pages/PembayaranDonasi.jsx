@@ -1,4 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
+import ProgressBar from '../Components/ProgressBar';
 import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function PembayaranDonasi({ auth, id, donationData }) {
@@ -49,6 +50,7 @@ export default function PembayaranDonasi({ auth, id, donationData }) {
     // FUNGSI NAVIGASI
     const handleManualConfirmation = () => {
         router.get(route('donasi.konfirmasi', { id: id }), {
+            donation_id: data.id, // WAJIB: pastikan donation_id dikirim
             name: donatur.name,
             email: donatur.email,
             phone: donatur.phone,
@@ -88,23 +90,7 @@ export default function PembayaranDonasi({ auth, id, donationData }) {
 
                 <div className="max-w-4xl mx-auto px-6 py-10">
 
-                    {/* --- Stepper --- */}
-                    <div className="flex justify-center items-center mb-10 md:mb-16">
-                        <div className="flex flex-col items-center relative z-10">
-                            <div className="text-sm font-bold text-gray-700 mb-2">Formulir Donasi</div>
-                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">1</div>
-                        </div>
-                        <div className="h-2 w-20 md:w-40 bg-[#4ade80] -mx-2 mt-6"></div>
-                        <div className="flex flex-col items-center relative z-10">
-                            <div className="text-sm font-bold text-gray-800 mb-2">Pembayaran</div>
-                            <div className="w-12 h-12 bg-[#4ade80] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md ring-4 ring-green-100 scale-110">2</div>
-                        </div>
-                        <div className="h-2 w-20 md:w-40 bg-[#4ade80] -mx-2 mt-6"></div>
-                        <div className="flex flex-col items-center relative z-10">
-                            <div className="text-sm font-bold text-gray-600 mb-2">Selesai</div>
-                            <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 font-bold text-lg">3</div>
-                        </div>
-                    </div>
+                    <ProgressBar step={2} />
 
                     {/* --- Content Utama --- */}
                     <div className="text-center mb-8">

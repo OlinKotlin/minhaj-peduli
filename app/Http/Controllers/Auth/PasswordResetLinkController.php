@@ -23,6 +23,16 @@ class PasswordResetLinkController extends Controller
     }
 
     /**
+     * Display the password reset link request view for Admin guard.
+     */
+    public function createAdmin(): Response
+    {
+        return Inertia::render('Admin/ForgotPassword', [
+            'status' => session('status'),
+        ]);
+    }
+
+    /**
      * Handle an incoming password reset link request.
      *
      * @throws \Illuminate\Validation\ValidationException
@@ -37,6 +47,28 @@ class PasswordResetLinkController extends Controller
         // to send the link, we will examine the response then see the message we
         // need to show to the user. Finally, we'll send out a proper response.
         $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return back()->with('status', __($status));
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [trans($status)],
+        ]);
+    }
+
+    /**
+     * Handle an incoming password reset link request for Admin guard.
+     */
+    public function storeAdmin(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $status = Password::broker('admins')->sendResetLink(
             $request->only('email')
         );
 
