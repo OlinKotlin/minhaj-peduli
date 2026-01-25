@@ -10,6 +10,10 @@ class Program extends Model
 {
     use HasFactory;
 
+    // Menambahkan properti dari kode kedua Anda
+    protected $table = 'programs'; // Pastikan nama tabelnya 'programs'
+    protected $primaryKey = 'id';  // Pastikan primary key-nya 'id'
+
     protected $fillable = [
         'title',
         'desc_short',
@@ -26,14 +30,14 @@ class Program extends Model
 
     // ==============================================================
     // ACCESSOR 1: collected_amount
-    // (Menghitung total donasi yang sudah dibayar)
+    // DISESUAIKAN: Menggunakan kolom 'status' dan 'nominal' dari Donation.php
     // ==============================================================
     protected function collectedAmount(): Attribute
     {
         return Attribute::make(
             get: function () {
-                // Menjumlahkan kolom 'amount' HANYA yang 'is_paid' = true
-                return $this->donations()->where('is_paid', true)->sum('amount');
+                // Menjumlahkan kolom 'nominal' yang statusnya 'paid' (sudah dibayar)
+                return $this->donations()->where('status', 'paid')->sum('nominal');
             },
         )->shouldCache();
     }

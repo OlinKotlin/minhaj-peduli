@@ -28,6 +28,19 @@ export default function DetailDonasi({ auth, program, donation }) {
         }
     }, []);
 
+    // --- PERBAIKAN POIN 1: Early Return (Pelindung jika data belum ada) ---
+    if (!program) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#dcfce7]">
+                <div className="text-center p-8 bg-white rounded-2xl shadow-xl">
+                    <h2 className="text-xl font-bold text-green-800 mb-2">Memuat Data...</h2>
+                    <p className="text-gray-600 mb-4">Mohon tunggu sebentar atau periksa koneksi Anda.</p>
+                    <Link href="/donasi" className="text-green-600 font-semibold underline">Kembali ke Daftar Donasi</Link>
+                </div>
+            </div>
+        );
+    }
+
     const handleUpdateStatus = (newStatus) => {
         const isPaid = newStatus === 'paid';
         const message = isPaid
@@ -45,17 +58,27 @@ export default function DetailDonasi({ auth, program, donation }) {
         }
     };
 
-    const handleDonationClick = () => {
-        const nominalValue = Number(nominal);
-        if (!nominalValue || nominalValue < 10000 || isNaN(nominalValue)) {
-            alert("Mohon masukkan nominal donasi minimal Rp 10.000 untuk melanjutkan.");
-            return;
-        }
-        router.visit(route('donasi.form', {
-            id: program.id,
-            nominal: nominalValue
-        }));
-    };
+   const handleDonationClick = () => {
+    // Pastikan ID dikonversi ke String agar Ziggy tidak bingung
+    const programId = program?.id ? String(program?.id) : null;
+
+    if (!programId) {
+        alert("Terjadi kesalahan: ID Program tidak ditemukan.");
+        return;
+    }
+
+    const nominalValue = Number(nominal);
+    if (!nominalValue || nominalValue < 10000 || isNaN(nominalValue)) {
+        alert("Mohon masukkan nominal donasi minimal Rp 10.000 untuk melanjutkan.");
+        return;
+    }
+
+    // Gunakan format objek yang sangat eksplisit
+    router.visit(route('donasi.form', {
+        program_id: programId,
+        nominal: nominalValue
+    }));
+};
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(currentUrl);
@@ -93,28 +116,24 @@ export default function DetailDonasi({ auth, program, donation }) {
                         </div>
 
                         <div className="grid grid-cols-4 gap-4 mb-8 text-center">
-                            {/* WhatsApp */}
                             <a href={shareLinks.whatsapp} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
                                 <div className="w-14 h-14 bg-[#25D366] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
                                     <MessageCircle size={28} fill="white" />
                                 </div>
                                 <span className="text-xs font-medium text-gray-600">WhatsApp</span>
                             </a>
-                            {/* Facebook */}
                             <a href={shareLinks.facebook} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
                                 <div className="w-14 h-14 bg-[#1877F2] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
                                     <Facebook size={28} fill="white" />
                                 </div>
                                 <span className="text-xs font-medium text-gray-600">Facebook</span>
                             </a>
-                            {/* LINE */}
                             <a href={shareLinks.line} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
                                 <div className="w-14 h-14 bg-[#06C755] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
                                     <span className="font-bold text-xl">L</span>
                                 </div>
                                 <span className="text-xs font-medium text-gray-600">LINE</span>
                             </a>
-                            {/* Twitter */}
                             <a href={shareLinks.twitter} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-2 group">
                                 <div className="w-14 h-14 bg-[#1DA1F2] rounded-2xl flex items-center justify-center text-white shadow-md group-hover:scale-110 transition">
                                     <Twitter size={28} fill="white" />
@@ -141,16 +160,12 @@ export default function DetailDonasi({ auth, program, donation }) {
 
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans">
 
-                {/* --- Navbar (UPDATED) --- */}
+                {/* --- Navbar --- */}
                 <nav className="flex justify-between items-center px-6 py-4 bg-green-100 shadow-sm sticky top-0 z-50">
                     <div className="text-2xl font-bold text-green-700 italic">
                         Minhaj<span className="text-green-900">Peduli</span>
                     </div>
                     <div className="flex items-center space-x-3 text-sm font-semibold">
-                        {/* PERUBAHAN DISINI:
-                            - Default: Transparan (text-gray-600)
-                            - Hover: Background Putih & Text Hijau (hover:bg-white hover:text-green-700)
-                        */}
                         <Link
                             href="/"
                             className="text-gray-600 hover:text-green-700 hover:bg-white px-4 py-2 rounded-full transition-all duration-300 hover:shadow-sm"
@@ -172,7 +187,6 @@ export default function DetailDonasi({ auth, program, donation }) {
                             Laporan Keuangan
                         </Link>
 
-                        {/* Tombol Donasi tetap Hijau Solid sebagai CTA Utama */}
                         <Link
                             href={route('donasi')}
                             className="bg-green-600 text-white px-5 py-2 rounded-full hover:bg-green-700 transition shadow-md border border-transparent"
@@ -298,7 +312,7 @@ export default function DetailDonasi({ auth, program, donation }) {
                     </div>
                 </div>
 
-                {/* --- Footer (Tetap sama) --- */}
+                {/* --- Footer --- */}
                 <footer className="w-full mt-10">
                     <div className="bg-green-50 py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">

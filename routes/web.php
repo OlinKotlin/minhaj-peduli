@@ -73,16 +73,15 @@ Route::get('/donasi', [DonationController::class, 'index'])->name('donasi');
 // RUTE TRANSAKSI DONASI
 // =========================================================================
 
-Route::get('/donasi/form/{id}/{nominal}', function ($id, $nominal) {
-    return inertia('FormDonasi', ['id' => $id, 'nominal' => $nominal]);
-})->name('donasi.form');
+// --- BAGIAN YANG DIUBAH: Mengarahkan ke fungsi formDonasi di Controller ---
+Route::get('/donasi/form/{program_id}/{nominal}', [DonationController::class, 'formDonasi'])->name('donasi.form');
 
 Route::post('/donasi/{id}/store', [DonationController::class, 'storeDonation'])->name('donasi.store');
 
 Route::get('/donasi/{id}/pembayaran', [DonationController::class, 'paymentForm'])->name('donasi.pembayaran');
 
-// Route GET untuk menampilkan halaman form konfirmasi
-Route::get('/donasi/{id}/konfirmasi', [DonationController::class, 'paymentForm'])->name('donasi.konfirmasi');
+// Route GET untuk menampilkan halaman form konfirmasi (gunakan konfirmasiManual)
+Route::get('/donasi/{id}/konfirmasi', [DonationController::class, 'konfirmasiManual'])->name('donasi.konfirmasi');
 
 // Route POST untuk memproses data konfirmasi (Submit Bukti Pembayaran)
 Route::post('/donasi/konfirmasi-proses', [DonationController::class, 'confirm'])
