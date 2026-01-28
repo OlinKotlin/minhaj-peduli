@@ -24,7 +24,10 @@ const formatRupiah = (number) => {
 const heroImages = [
     "/images/pesantren1.png",
     "/images/pesantren2.png",
-    "/images/pesantren1.png",
+    "/images/pesantren3.jpeg",
+    "/images/pesantren4.jpeg",
+    "/images/pesantren5.jpeg",
+    "/images/pesantren6.jpeg",
 ];
 
 export default function Welcome({ auth, programsData, totalStats }) {
@@ -103,9 +106,9 @@ export default function Welcome({ auth, programsData, totalStats }) {
                                 <br />
                                 Pesantren
                                 <br />
-                                Misbahul Minhaj
+                                AL-Minhaj
                             </h2>
-                            <p className="text-white/90 text-sm md:text-lg leading-relaxed font-normal">
+                            <p className="text-white/90 text-base md:text-xl leading-relaxed font-normal">
                                 Bergabunglah dengan gerakan kebaikan untuk
                                 mendukung pembangunan dan pengembangan
                                 pesantren. Setiap donasi Anda adalah investasi

@@ -1,6 +1,6 @@
-import { Head } from '@inertiajs/react';
+import { Head } from "@inertiajs/react";
 import Navbar from "@/Components/Navbar";
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail } from "lucide-react";
 
 export default function About({ auth }) {
     return (
@@ -8,7 +8,6 @@ export default function About({ auth }) {
             <Head title="Tentang Kami" />
 
             <div className="min-h-screen bg-[#dcfce7] text-slate-800 font-sans overflow-x-hidden">
-
                 <Navbar auth={auth} />
 
                 {/* --- Header / Hero Section --- */}
@@ -47,7 +46,7 @@ export default function About({ auth }) {
                         </h2>
 
                         <div className="flex flex-col md:flex-row gap-8 items-start">
-                             {/* Gambar Pondasi dengan Efek Zoom */}
+                            {/* Gambar Pondasi dengan Efek Zoom */}
                             <div className="md:w-1/3 w-full animate-fade-in-up">
                                 <div className="overflow-hidden rounded-xl border-4 border-green-600 shadow-xl group">
                                     <img
@@ -61,10 +60,20 @@ export default function About({ auth }) {
                             {/* Teks Deskripsi */}
                             <div className="md:w-2/3 text-sm md:text-base leading-relaxed space-y-4 text-green-50 text-justify animate-fade-in-up delay-100">
                                 <p>
-                                    Pondok Pesantren Al-Minhaj adalah lembaga pendidikan Islam yang berfokus pada pembinaan generasi Qur'ani melalui program tahfidz Al-Qur'an tingkat SD dan SMP. Kami memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf, sebagai bentuk kepedulian dan dakwah pendidikan.
+                                    Pondok Pesantren Al-Minhaj adalah lembaga
+                                    pendidikan Islam yang berfokus pada
+                                    pembinaan generasi Qur'ani melalui program
+                                    tahfidz Al-Qur'an tingkat SD dan SMP. Kami
+                                    memberikan pendidikan gratis bagi anak
+                                    yatim, dhuafa, dan muallaf, sebagai bentuk
+                                    kepedulian dan dakwah pendidikan.
                                 </p>
                                 <p>
-                                    Dengan bimbingan ustadz berpengalaman, lingkungan yang asri, serta kurikulum tahfidz yang terarah, Al-Minhaj berkomitmen mencetak hafidz dan hafidzah yang berakhlak mulia dan bermanfaat bagi umat.
+                                    Dengan bimbingan ustadz berpengalaman,
+                                    lingkungan yang asri, serta kurikulum
+                                    tahfidz yang terarah, Al-Minhaj berkomitmen
+                                    mencetak hafidz dan hafidzah yang berakhlak
+                                    mulia dan bermanfaat bagi umat.
                                 </p>
                             </div>
                         </div>
@@ -74,17 +83,22 @@ export default function About({ auth }) {
                 {/* --- Visi & Misi Section --- */}
                 <section className="bg-[#dcfce7] py-16 px-6">
                     <div className="max-w-5xl mx-auto space-y-16">
-
                         {/* VISI */}
                         <div className="text-center animate-fade-in-up">
                             <div className="flex items-center justify-center gap-4 mb-6">
                                 <div className="h-px w-20 bg-green-700"></div>
-                                <h2 className="text-2xl font-bold text-green-800 uppercase">VISI</h2>
+                                <h2 className="text-2xl font-bold text-green-800 uppercase">
+                                    VISI
+                                </h2>
                                 <div className="h-px w-20 bg-green-700"></div>
                             </div>
                             {/* Card Hover Lift */}
                             <div className="bg-green-600 text-white p-8 rounded-xl shadow-lg italic text-lg leading-relaxed transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-green-700 cursor-default">
-                                "Membangun pusat pendidikan Islam dengan model pesantren dengan dukungan bangunan fisik (gedung pendidikan dan masjid) yang berkualitas serta sarana dan prasarana modern yang mendukung proses pembelajaran para santri"
+                                "Membangun pusat pendidikan Islam dengan model
+                                pesantren dengan dukungan bangunan fisik (gedung
+                                pendidikan dan masjid) yang berkualitas serta
+                                sarana dan prasarana modern yang mendukung
+                                proses pembelajaran para santri"
                             </div>
                         </div>
 
@@ -92,20 +106,30 @@ export default function About({ auth }) {
                         <div>
                             <div className="flex items-center justify-center gap-4 mb-6">
                                 <div className="h-px w-20 bg-green-700"></div>
-                                <h2 className="text-2xl font-bold text-green-800 uppercase">MISI</h2>
+                                <h2 className="text-2xl font-bold text-green-800 uppercase">
+                                    MISI
+                                </h2>
                                 <div className="h-px w-20 bg-green-700"></div>
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-green-700">
-                                    Menjadikan pesantren (ma'had) sebagai tempat yang memadai sekaligus menyenangkan bagi para santri maupun para pendidik (ustadz/guru) dalam proses belajar-mengajar, baik menghafal al-Quran maupun mengkaji kitab kuning.
+                                    Menjadikan pesantren (ma'had) sebagai tempat
+                                    yang memadai sekaligus menyenangkan bagi
+                                    para santri maupun para pendidik
+                                    (ustadz/guru) dalam proses belajar-mengajar,
+                                    baik menghafal al-Quran maupun mengkaji
+                                    kitab kuning.
                                 </div>
                                 <div className="bg-green-600 text-white p-6 rounded-xl shadow-lg text-sm md:text-base text-justify transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-green-700">
-                                    Menjadikan pesantren (ma'had) sebagai tempat yang mendukung proses percepatan pembinaan dan pengkaderan generasi penghapal dan pejuang al-Quran, khususnya dari kalangan anak-anak yatim dan dhuafa.
+                                    Menjadikan pesantren (ma'had) sebagai tempat
+                                    yang mendukung proses percepatan pembinaan
+                                    dan pengkaderan generasi penghapal dan
+                                    pejuang al-Quran, khususnya dari kalangan
+                                    anak-anak yatim dan dhuafa.
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </section>
 
@@ -121,13 +145,16 @@ export default function About({ auth }) {
                             <div className="flex flex-col md:flex-row justify-between w-full gap-8 mb-8 md:mb-16 relative z-10">
                                 <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] transform transition-transform duration-300 hover:scale-105 hover:bg-green-100">
                                     <p className="text-green-900 font-bold text-sm">
-                                        Memberikan pendidikan gratis bagi anak yatim, dhuafa, dan muallaf
+                                        Memberikan pendidikan gratis bagi anak
+                                        yatim, dhuafa, dan muallaf
                                     </p>
                                 </div>
 
                                 <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] transform transition-transform duration-300 hover:scale-105 hover:bg-green-100">
                                     <p className="text-green-900 font-bold text-sm">
-                                        Al-Minhaj berkomitmen mencetak hafizh dan hafizhah yang berakhlak mulia dan bermanfaat bagi umat.
+                                        Al-Minhaj berkomitmen mencetak hafizh
+                                        dan hafizhah yang berakhlak mulia dan
+                                        bermanfaat bagi umat.
                                     </p>
                                 </div>
                             </div>
@@ -135,42 +162,66 @@ export default function About({ auth }) {
                             {/* Baris Bawah */}
                             <div className="bg-green-200 border-4 border-green-600 p-6 rounded-lg shadow-md w-full md:w-5/12 flex items-center justify-center min-h-[120px] relative mt-4 z-10 transform transition-transform duration-300 hover:scale-105 hover:bg-green-100">
                                 <p className="text-green-900 font-bold text-sm">
-                                    Berfokus pada pembinaan generasi Qur'ani melalui program tahfidz AL-Qur'an tingkat SD dan SMP.
+                                    Berfokus pada pembinaan generasi Qur'ani
+                                    melalui program tahfidz AL-Qur'an tingkat SD
+                                    dan SMP.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </section>
 
-                {/* --- Ketua Yayasan Section --- */}
+                {/* --- PENDIRI Yayasan Section --- */}
                 <section className="bg-green-700 py-16 px-6 text-white mt-10">
                     <div className="max-w-5xl mx-auto">
                         <h2 className="text-center text-2xl font-bold uppercase mb-10 border-b border-green-500 inline-block pb-2 px-10">
-                            KETUA YAYASAN
+                            PENDIRI YAYASAN Al MINHAJ
                         </h2>
 
-                        <div className="flex flex-col md:flex-row items-center gap-10">
-                            {/* Foto Profil dengan Efek Polaroid Swing */}
-                            <div className="bg-white p-3 shadow-2xl transform -rotate-2 hover:rotate-0 hover:scale-105 transition duration-500 ease-in-out cursor-pointer">
-                                <div className="w-64 h-80 bg-gray-300 overflow-hidden relative group">
+                        <div className="flex flex-col md:flex-row items-center justify-center gap-12 xl:gap-24">
+                            <div className="bg-white p-3 shadow-2xl transform -rotate-2 hover:rotate-0 hover:scale-105 transition duration-500 ease-in-out cursor-pointer flex flex-col items-center w-72 xl:w-80">
+                                <div className="w-60 h-80 bg-gray-300 overflow-hidden relative group rounded-xl">
                                     <img
-                                        src="/images/ketua-yayasan.jpg"
-                                        alt="Foto Ketua Yayasan"
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        onError={(e) => {e.target.src = "https://via.placeholder.com/300x400?text=Foto+Ketua"}}
+                                        src="/images/ustadz1.jpeg"
+                                        alt="Foto Ustadz 1"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 rounded-xl"
                                     />
-                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors rounded-xl"></div>
+                                </div>
+                                <div className="mt-4 text-center">
+                                    <h3 className="text-xl font-bold font-serif italic text-green-900">
+                                        Ustadz Taufik Syahrir
+                                    </h3>
                                 </div>
                             </div>
-
-                            {/* Teks Quote Animasi Masuk */}
-                            <div className="flex-1 text-center md:text-left animate-slide-in-right">
-                                <h3 className="text-4xl font-bold font-serif italic mb-4">Loremipsum</h3>
-                                <p className="text-green-100 italic text-lg leading-relaxed mb-6">
-                                    “Ketua Yayasan Pesantren Tahfidz Al-Minhaj adalah sosok yang berdedikasi dalam memajukan dakwah dan pendidikan Qur’ani, serta memastikan seluruh program berjalan dengan penuh integritas, keteladanan, dan rasa tanggung jawab.”
-                                </p>
-                                <div className="text-right mt-4">
-                                    <p className="font-bold text-xl tracking-wide border-t border-green-500 inline-block pt-2">ketua yayasan</p>
+                            <div className="bg-white p-3 shadow-2xl transform rotate-1 hover:rotate-0 hover:scale-105 transition duration-500 ease-in-out cursor-pointer flex flex-col items-center w-72 xl:w-80">
+                                <div className="w-60 h-80 bg-gray-300 overflow-hidden relative group rounded-xl">
+                                    <img
+                                        src="/images/ustadz2.jpeg"
+                                        alt="Foto Ustadz 2"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 rounded-xl"
+                                    />
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors rounded-xl"></div>
+                                </div>
+                                <div className="mt-4 text-center">
+                                    <h3 className="text-xl font-bold font-serif italic text-green-900">
+                                        Ustadz Muhammad Husni Thamrin S.SSI.
+                                    </h3>
+                                </div>
+                            </div>
+                            <div className="bg-white p-3 shadow-2xl transform rotate-3 hover:rotate-0 hover:scale-105 transition duration-500 ease-in-out cursor-pointer flex flex-col items-center w-72 xl:w-80">
+                                <div className="w-60 h-80 bg-gray-300 overflow-hidden relative group rounded-xl">
+                                    <img
+                                        src="/images/ustadz3.jpeg"
+                                        alt="Foto Ustadz 3"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 rounded-xl"
+                                    />
+                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors rounded-xl"></div>
+                                </div>
+                                <div className="mt-4 text-center">
+                                    <h3 className="text-xl font-bold font-serif italic text-green-900">
+                                        Ustadz Idham Khalid
+                                    </h3>
                                 </div>
                             </div>
                         </div>
@@ -179,39 +230,57 @@ export default function About({ auth }) {
 
                 {/* --- Footer --- */}
                 <footer className="w-full mt-0 bg-green-50">
-                     <div className="py-10 px-6 text-green-900">
+                    <div className="py-10 px-6 text-green-900">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-10">
-
                             {/* Kiri */}
                             <div className="flex flex-col justify-start md:w-1/3">
-                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">MinhajPeduli</h2>
-                                <p className="text-lg font-medium text-green-800">Pondok Pesantren AL-Minhaj</p>
+                                <h2 className="text-3xl font-bold italic text-green-700 mb-2">
+                                    MinhajPeduli
+                                </h2>
+                                <p className="text-lg font-medium text-green-800">
+                                    Pondok Pesantren AL-Minhaj
+                                </p>
                             </div>
 
                             {/* Kanan */}
                             <div className="flex flex-col md:flex-row gap-8 md:gap-16 md:w-2/3 md:justify-end">
                                 <div>
-                                    <h3 className="text-xl font-bold mb-4 text-green-900">Alamat</h3>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">
+                                        Alamat
+                                    </h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-start group">
                                             <MapPin className="w-6 h-6 text-green-700 mr-3 mt-1 shrink-0 group-hover:scale-110 transition-transform" />
                                             <span className="text-green-800 leading-relaxed">
-                                                Desa kuripan Kel.Kuripan<br />
+                                                Desa kuripan Kel.Kuripan
+                                                <br />
                                                 Kec. Ciseeng, Bogor, Jawa Barat
                                             </span>
                                         </li>
                                     </ul>
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold mb-4 text-green-900">Kontak kami</h3>
+                                    <h3 className="text-xl font-bold mb-4 text-green-900">
+                                        Kontak kami
+                                    </h3>
                                     <ul className="space-y-3">
                                         <li className="flex items-center group">
                                             <Mail className="w-6 h-6 text-green-700 mr-3 group-hover:scale-110 transition-transform" />
-                                            <a href="mailto:AlMinhaj@gmail.com" className="text-green-800 hover:text-green-600 transition">AlMinhaj@gmail.com</a>
+                                            <a
+                                                href="mailto:AlMinhaj@gmail.com"
+                                                className="text-green-800 hover:text-green-600 transition"
+                                            >
+                                                AlMinhaj@gmail.com
+                                            </a>
                                         </li>
                                         <li className="flex items-center group">
                                             <Phone className="w-6 h-6 text-green-700 mr-3 group-hover:scale-110 transition-transform" />
-                                            <a href="tel:081234567890" className="text-green-800 hover:text-green-600 transition">081234567890</a>
+                                            <a
+                                                href="tel:081234567890"
+                                                className="text-green-800 hover:text-green-600 transition"
+                                            >
+                                                081234567890
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
@@ -260,7 +329,6 @@ export default function About({ auth }) {
                     .delay-100 { animation-delay: 0.1s; }
                     .delay-200 { animation-delay: 0.2s; }
                 `}</style>
-
             </div>
         </>
     );

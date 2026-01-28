@@ -63,7 +63,36 @@ Route::get('/about', function () {
 
 // Halaman Laporan
 Route::get('/laporan', function () {
-    return Inertia::render('Laporan');
+    // Ringkasan keuangan sederhana berdasarkan data donasi yang sudah dibayar
+    $total_masuk = Donation::where('status', 'paid')->sum('nominal');
+    // Jika belum ada modul pengeluaran, set 0 (bisa dikembangkan nanti)
+    $total_keluar = 0;
+    $saldo_akhir = $total_masuk - $total_keluar;
+
+    // Ambil 5 transaksi terakhir dari tabel donations, hanya yang sudah dibayar/verified (status = 'paid')
+    $mutasi = Donation::where('status', 'paid')
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get()
+        ->map(function ($d) {
+            return [
+                'id' => $d->id,
+                'tanggal' => $d->created_at->format('d M Y'),
+                'uraian' => 'Donasi - ' . ($d->name ?: 'Anonim') . ' (' . ($d->invoice_no ?? '-') . ')',
+                'tipe' => $d->status === 'paid' ? 'masuk' : 'masuk',
+                'nominal' => $d->nominal,
+            ];
+        });
+
+    return Inertia::render('Laporan', [
+        'summary' => [
+            'total_masuk' => (int) $total_masuk,
+            'total_keluar' => (int) $total_keluar,
+            'saldo_akhir' => (int) $saldo_akhir,
+        ],
+        'mutasi' => $mutasi,
+        'auth' => Auth::user() ? ['user' => Auth::user()] : null,
+    ]);
 })->name('laporan');
 
 // Halaman List Donasi (INDEX)
@@ -73,14 +102,30 @@ Route::get('/donasi', [DonationController::class, 'index'])->name('donasi');
 // RUTE TRANSAKSI DONASI
 // =========================================================================
 
-// --- BAGIAN YANG DIUBAH: Mengarahkan ke fungsi formDonasi di Controller ---
-Route::get('/donasi/form/{program_id}/{nominal}', [DonationController::class, 'formDonasi'])->name('donasi.form');
+Route::get('/donasi/form/{id}/{nominal}', function ($id, $nominal) {
+    $program = Program::find($id);
+    if (!$program) {
+        return redirect()->back()->with('error', 'Program tidak ditemukan');
+    }
+
+    $programData = [
+        'id' => $program->id,
+        'title' => $program->title,
+        'img' => $program->image_path ? asset('storage/' . ltrim($program->image_path, '/')) : asset('images/default.png'),
+    ];
+
+    return inertia('FormDonasi', [
+        'program_id' => $id,
+        'program' => $programData,
+        'nominal' => (int) $nominal,
+    ]);
+})->name('donasi.form');
 
 Route::post('/donasi/{id}/store', [DonationController::class, 'storeDonation'])->name('donasi.store');
 
 Route::get('/donasi/{id}/pembayaran', [DonationController::class, 'paymentForm'])->name('donasi.pembayaran');
 
-// Route GET untuk menampilkan halaman form konfirmasi (gunakan konfirmasiManual)
+// Route GET untuk menampilkan halaman form konfirmasi (menggunakan donation ID)
 Route::get('/donasi/{id}/konfirmasi', [DonationController::class, 'konfirmasiManual'])->name('donasi.konfirmasi');
 
 // Route POST untuk memproses data konfirmasi (Submit Bukti Pembayaran)

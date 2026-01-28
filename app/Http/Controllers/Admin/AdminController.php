@@ -130,9 +130,39 @@ class AdminController extends Controller
             $paidQuery->latest();
         }
 
+        // Ambil paginasi, lalu transform setiap item untuk menyertakan field `date` yang dipakai oleh frontend.
+        $pending = $pendingQuery->paginate(10)->withQueryString();
+        $paid = $paidQuery->paginate(10)->withQueryString();
+
+        $pending->getCollection()->transform(function ($donation) {
+            return [
+                'id' => $donation->id,
+                'invoice_no' => $donation->invoice_no,
+                'name' => $donation->name,
+                'phone' => $donation->phone,
+                'program' => $donation->program ? ['title' => $donation->program->title] : null,
+                'nominal' => $donation->nominal,
+                'status' => $donation->status,
+                'date' => $donation->created_at ? $donation->created_at->format('d/m/Y') : null,
+            ];
+        });
+
+        $paid->getCollection()->transform(function ($donation) {
+            return [
+                'id' => $donation->id,
+                'invoice_no' => $donation->invoice_no,
+                'name' => $donation->name,
+                'phone' => $donation->phone,
+                'program' => $donation->program ? ['title' => $donation->program->title] : null,
+                'nominal' => $donation->nominal,
+                'status' => $donation->status,
+                'date' => $donation->created_at ? $donation->created_at->format('d/m/Y') : null,
+            ];
+        });
+
         return Inertia::render('Admin/Donations', [
-            'pendingDonations' => $pendingQuery->paginate(10)->withQueryString(),
-            'paidDonations' => $paidQuery->paginate(10)->withQueryString(),
+            'pendingDonations' => $pending,
+            'paidDonations' => $paid,
             'filters' => $request->only(['sort', 'direction', 'tab', 'start_date', 'end_date'])
         ]);
     }

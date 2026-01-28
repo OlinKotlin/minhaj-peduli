@@ -49,7 +49,9 @@ export default function PembayaranDonasi({ auth, id, donationData }) {
     const handleManualConfirmation = () => {
         const donationId = data?.id;
         if (!donationId) {
-            alert("Donation ID tidak tersedia. Mohon muat ulang halaman atau hubungi admin.");
+            alert(
+                "Donation ID tidak tersedia. Mohon muat ulang halaman atau hubungi admin.",
+            );
             return;
         }
         // Arahkan langsung ke halaman konfirmasi untuk donationId

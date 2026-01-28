@@ -9,7 +9,6 @@ use App\Models\Donation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage; // Tambahkan ini untuk handle Storage
-use Illuminate\Support\Facades\DB;
 
 class DonationController extends Controller
 {
@@ -143,52 +142,14 @@ public function paymentForm(Request $request, $programId)
     ]);
 }
 
-    /**
-     * Menampilkan form donasi berdasarkan program dan nominal (route donasi.form)
-     */
-    public function formDonasi($program_id, $nominal)
-    {
-        // Coba ambil program berdasarkan parameter pertama
-        $program = Program::find($program_id);
-
-        // Jika tidak ditemukan, coba bandingkan dengan parameter kedua (kemungkinan urutan terbalik)
-        if (!$program) {
-            $program = Program::find($nominal);
-            if ($program) {
-                $temp = $nominal;
-                $nominal = $program_id;
-                $program_id = $temp;
-            }
-        }
-
-        // Jika masih tidak ditemukan, berikan response JSON debugging (lebih informatif saat development)
-        if (!$program) {
-            $semua_id = Program::pluck('id')->toArray();
-            return response()->json([
-                'status' => 'Program tidak ditemukan',
-                'id_dicari' => $program_id,
-                'id_tersedia' => $semua_id,
-            ], 404);
-        }
-
-        return Inertia::render('FormDonasi', [
-            'program' => [
-                'id' => (int) $program->id,
-                'title' => $program->title,
-            ],
-            'nominal' => (int) $nominal,
-        ]);
-    }
-
 
 
     public function accept($id)
     {
         $donation = Donation::findOrFail($id);
 
-        // Tandai sebagai 'paid' sehingga akan terhitung pada statistik total donatur
         $donation->update([
-            'status' => 'paid'
+            'status' => 'success'
         ]);
 
         return redirect()->back()->with('success', 'Donasi berhasil diterima!');
@@ -301,10 +262,10 @@ public function paymentForm(Request $request, $programId)
         if ($request->hasFile('proof_image')) {
             $path = $request->file('proof_image')->store('payment_proofs', 'public');
 
-            // Update data donasi — tetap 'pending' agar admin memverifikasi bukti terlebih dahulu
+            // Update data donasi
             $donation = Donation::findOrFail($request->donation_id);
             $donation->update([
-                'status' => 'pending', // menunggu verifikasi admin
+                'status' => 'pending', // Menunggu verifikasi admin
                 'proof_path' => $path,
                 'bank_owner' => $request->bank_owner,
                 'bank_name' => $request->bank_name,
@@ -312,7 +273,7 @@ public function paymentForm(Request $request, $programId)
                 'notes' => $request->notes,
             ]);
 
-            return redirect()->back()->with('success', 'Konfirmasi berhasil dikirim dan menunggu verifikasi admin.');
+            return redirect()->back()->with('success', 'Konfirmasi berhasil dikirim.');
         }
 
         return redirect()->back()->withErrors(['proof_image' => 'Gagal mengunggah gambar.']);

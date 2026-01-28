@@ -18,8 +18,8 @@ class HomeController extends Controller
             ->limit(4) // Ambil hanya 4
             ->get()
             ->map(function ($program) {
-                // HANYA hitung donasi yang sudah dibayar (status = 'paid')
-                $collected_amount = $program->donations->where('status', 'paid')->sum('nominal');
+                // HANYA hitung donasi yang sudah dibayar (is_paid = true)
+                $collected_amount = $program->donations->where('is_paid', true)->sum('amount');
                 $target_amount = $program->target_amount;
 
                 $percentage = 0;
@@ -38,10 +38,10 @@ class HomeController extends Controller
             });
 
         // 2. Hitung Statistik Global (untuk Stats Boxes)
-        $totalCollectedAmount = Donation::where('status', 'paid')->sum('nominal');
+        $totalCollectedAmount = Donation::where('is_paid', true)->sum('amount');
         $totalProgramCount = Program::count();
         // Hitung total donatur unik (hanya yang sudah membayar)
-        $totalDonaturCount = Donation::where('status', 'paid')->distinct('name')->count();
+        $totalDonaturCount = Donation::where('is_paid', true)->distinct('donatur_name')->count();
 
         $totalStats = [
             'program_count' => $totalProgramCount,
