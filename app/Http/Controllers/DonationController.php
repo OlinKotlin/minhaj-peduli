@@ -171,11 +171,11 @@ public function paymentForm(Request $request, $programId)
         if ($request->hasFile('image')) {
             // Hapus gambar lama dari storage jika ada
             if ($program->image_path) {
-                Storage::disk('public')->delete($program->image_path);
+                Storage::disk(env('FILESYSTEM_DISK', 'local'))->delete($program->image_path);
             }
 
-            // Simpan ke storage (disk public) agar sama dengan AdminController
-            $path = $request->file('image')->store('programs', 'public');
+            // Simpan ke storage sesuai disk yang dikonfigurasi (local or s3)
+            $path = $request->file('image')->store('programs', env('FILESYSTEM_DISK', 'local'));
             $program->image_path = $path;
         }
 
@@ -207,11 +207,11 @@ public function paymentForm(Request $request, $programId)
         if ($request->hasFile('proof_image')) {
             // Hapus foto lama jika ada
             if ($donation->proof_image) {
-                Storage::disk('public')->delete($donation->proof_image);
+                Storage::disk(env('FILESYSTEM_DISK', 'local'))->delete($donation->proof_image);
             }
 
-            // Simpan foto baru
-            $path = $request->file('proof_image')->store('proofs', 'public');
+            // Simpan foto baru ke disk yang dikonfigurasi
+            $path = $request->file('proof_image')->store('proofs', env('FILESYSTEM_DISK', 'local'));
             $donation->update(['proof_image' => $path]);
         }
 
@@ -260,7 +260,7 @@ public function paymentForm(Request $request, $programId)
 
         // Proses upload file
         if ($request->hasFile('proof_image')) {
-            $path = $request->file('proof_image')->store('payment_proofs', 'public');
+            $path = $request->file('proof_image')->store('payment_proofs', env('FILESYSTEM_DISK', 'local'));
 
             // Update data donasi
             $donation = Donation::findOrFail($request->donation_id);

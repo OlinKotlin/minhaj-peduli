@@ -156,7 +156,7 @@ Route::prefix('admin')->group(function () {
 // GROUP ADMIN (Membutuhkan Login)
 Route::middleware(['auth:admin', 'verified'])->prefix('admin')->name('admin.')->group(function () {
 
-    // --- RUTE PROGRAM ---
+    // --- RUTE PROGRAM ---     
     Route::get('/programs/{id}/edit', [AdminController::class, 'editProgram'])->name('donasi.edit');
     Route::put('/programs/{id}', [AdminController::class, 'updateProgram'])->name('programs.update');
     Route::delete('/programs/{id}', [AdminController::class, 'destroyProgram'])->name('donasi.destroy');

@@ -57,3 +57,37 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Storage & Secrets (Project-specific)
+
+This project supports multiple filesystem disks via Laravel's `FILESYSTEM_DISK` setting.
+
+- Local (development): set `FILESYSTEM_DISK=local` in your `.env` to store uploaded files on disk (default).
+- Public (local public disk): `FILESYSTEM_DISK=public` and run `php artisan storage:link`.
+- S3 (production): set `FILESYSTEM_DISK=s3` and provide AWS credentials in the environment variables (DO NOT commit them):
+
+```
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
+AWS_DEFAULT_REGION=your_region
+AWS_BUCKET=your_bucket_name
+FILESYSTEM_DISK=s3
+```
+
+Installation (already applied in this repo):
+
+```bash
+composer require league/flysystem-aws-s3-v3 "^3.0"
+```
+
+Development notes:
+- Keep `.env` out of version control. Use `.env.example` for placeholders.
+- For production, use your platform's secret manager (AWS Secrets Manager, Azure Key Vault, GitHub Actions secrets) to inject credentials.
+- After changing filesystem settings, clear config cache:
+
+```bash
+php artisan config:clear
+php artisan storage:link    # only if using public disk locally
+```
+
+If you want, I can add a short `DEPLOYMENT.md` with step-by-step production instructions.

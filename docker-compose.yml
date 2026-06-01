@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minhaj-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    networks:
+      - minhaj-network
+
+  db:
+    image: mysql:8.0
+    container_name: minhaj-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - minhaj-network
+
+networks:
+  minhaj-network:
+    driver: bridge

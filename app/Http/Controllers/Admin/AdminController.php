@@ -190,10 +190,10 @@ class AdminController extends Controller
         if ($request->hasFile('image')) {
             // Hapus foto lama jika ada di storage
             if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+                Storage::disk(env('FILESYSTEM_DISK', 'local'))->delete($user->image);
             }
-            // Simpan foto baru ke folder 'users' di disk public
-            $user->image = $request->file('image')->store('users', 'public');
+            // Simpan foto baru ke folder 'users' di disk yang dikonfigurasi
+            $user->image = $request->file('image')->store('users', env('FILESYSTEM_DISK', 'local'));
         }
 
         // Simpan semua perubahan ke database
@@ -338,9 +338,9 @@ class AdminController extends Controller
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada
             if ($program->image_path) {
-                Storage::disk('public')->delete($program->image_path);
+                Storage::disk(env('FILESYSTEM_DISK', 'local'))->delete($program->image_path);
             }
-            $program->image_path = $request->file('image')->store('programs', 'public');
+            $program->image_path = $request->file('image')->store('programs', env('FILESYSTEM_DISK', 'local'));
         }
 
         $program->save();
@@ -362,7 +362,7 @@ class AdminController extends Controller
 
         // Opsional: Hapus gambar dari storage jika ada
         if ($program->image_path) {
-            Storage::disk('public')->delete($program->image_path);
+            Storage::disk(env('FILESYSTEM_DISK', 'local'))->delete($program->image_path);
         }
 
         $program->delete();
