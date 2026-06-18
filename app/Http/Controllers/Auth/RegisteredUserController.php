@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
@@ -40,24 +39,15 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-
-            // CATATAN: Kalau form pendaftaran ini KHUSUS buat bikin akun Admin,
-            // buka komentar (hapus tanda //) pada baris di bawah ini:
-            // 'role' => 'admin',
+            'role' => 'admin', // <-- Langsung set sebagai admin
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // PERHATIAN:
+        // Auth::login($user) sengaja DIHAPUS biar sistem nggak otomatis login.
 
-        // LOGIKA REDIRECT SETELAH DAFTAR
-        // Kalau akun yang baru dibuat adalah admin, lempar ke dashboard
-        if ($user->role === 'admin') {
-            return redirect('/admin/dashboard');
-        }
-
-        // PERBAIKAN: Kalau user biasa, lempar ke beranda web utama
-        // Pakai redirect('/') lebih aman daripada route('welcome')
-        return redirect('/');
+        // Setelah data admin baru sukses disimpan, langsung tendang ke halaman login
+        return redirect('/login');
     }
 }
