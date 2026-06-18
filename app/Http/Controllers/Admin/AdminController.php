@@ -44,13 +44,13 @@ class AdminController extends Controller
                     'amount'     => 'Rp ' . number_format($donation->nominal, 0, ',', '.'),
                     'program'    => $donation->program->title ?? '-',
                     'status'     => $donation->status,
-                    'date'       => $donation->created_at->format('d/m/Y'),
+                    'date'       => $donation->created_at->format('dd/mm/YYYY'),
                 ];
             });
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,
-            'recentDonations' => $recentDonations
+            'recentDonations'> $recentDonations
         ]);
     }
 

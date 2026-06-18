@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
-use Inertia\Response; // Penting untuk type hint Inertia::render
+use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -31,16 +31,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Gunakan guard 'admin' untuk endpoint /login agar login diarahkan ke admin
         $request->ensureIsNotRateLimited();
 
         $credentials = $request->only('email', 'password');
 
-        if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
+        // PERBAIKAN: Gunakan Auth bawaan untuk mengecek tabel 'users'
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             RateLimiter::clear($request->throttleKey());
 
-            return redirect()->intended(route('admin.dashboard', absolute: false));
+            // LOGIKA REDIRECT: Cek role user yang berhasil login
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard', absolute: false));
+            }
+
+            // Jika user biasa, lempar ke beranda
+            return redirect()->intended('/');
         }
 
         RateLimiter::hit($request->throttleKey());
@@ -67,19 +73,11 @@ class AuthenticatedSessionController extends Controller
     // --- METODE BARU UNTUK ADMIN (MENGGUNAKAN GUARD 'admin') ---
     // =======================================================
 
-    /**
-     * Tampilkan halaman Login Admin (Inertia/React).
-     * * [PERBAIKAN UTAMA: Mengganti return view() dengan Inertia::render()]
-     */
     public function createAdmin(): Response
     {
-        // Tampilkan komponen Inertia yang ada di resources/js/Pages/Admin/Login.jsx
         return Inertia::render('Admin/Login');
     }
 
-    /**
-     * Tangani permintaan otentikasi Admin.
-     */
     public function storeAdmin(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -87,30 +85,21 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Coba login menggunakan 'admin' guard
         if (Auth::guard('admin')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
-            // Redirect ke rute admin.dashboard setelah berhasil
             return redirect()->intended(route('admin.dashboard', absolute: false));
         }
 
-        // Jika gagal
         return back()->withInput()->with('error', 'Kredensial Admin tidak cocok.');
     }
 
-    /**
-     * Hancurkan sesi otentikasi Admin.
-     */
     public function destroyAdmin(Request $request): RedirectResponse
     {
-        // Logout dari 'admin' guard
         Auth::guard('admin')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // REDIRECT ke halaman beranda sesuai nama route 'welcome' di web.php Anda
         return redirect()->route('welcome');
     }
 }
